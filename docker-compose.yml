@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  api:
+    build:
+      context: ./backend
+    container_name: backend-api
+    environment:
+      - DB_HOST
+      - DB_USER
+      - DB_PASSWORD
+      - DB_NAME
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+    volumes:
+      - ./backend:/usr/pethub/backend 
+      - /usr/pethub/backend/node_modules 
+
+  front:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/usr/pethub/frontend 
+      - /usr/pethub/frontend/node_modules 
+
+networks:
+  app_network:
+
+volumes:
+  mysql_data:
