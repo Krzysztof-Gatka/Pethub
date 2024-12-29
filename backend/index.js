@@ -1,5 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
+const axios = require('axios')
+const jwt = require('jsonwebtoken')
 const mysql = require('mysql2/promise');
 const app = express()
 const port = 3000
@@ -20,6 +22,68 @@ const pool = mysql.createPool({
   password: mysqlPassword,
   database: mysqlDatabase,
 });
+
+const verifyGoogleToken = (idToken) => {
+  const decoded = jwt.decode(idToken);
+  return {
+    googleId: decoded.sub,
+    name: decoded.name,
+    email: decoded.email,
+    photo: decoded.picture,
+  };
+};
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user.id, email: user.email }, // Payload
+    process.env.JWT_SECRET,            // Secret key
+    { expiresIn: '1h' }                // Token expiration
+  );
+};
+
+app.get('/auth/google', (req, res) => {
+  // const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.O_AUTH_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_CALLBACK_URL}&scope=profile email&state=someRandomString`;
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${process.env.O_AUTH_CLIENT_ID}` +
+    `&redirect_uri=${process.env.GOOGLE_CALLBACK_URL}` +
+    `&response_type=code` +
+    `&scope=openid%20email%20profile` +
+    `&prompt=consent`; // <-- This forces Google to always show the login window
+  res.redirect(authUrl);
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+  const { code } = req.query;
+
+  try {
+    const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+      code,
+      client_id: process.env.O_AUTH_CLIENT_ID,
+      client_secret: process.env.O_AUTH_SECRET_KEY,
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+      grant_type: 'authorization_code',
+    });
+
+    const { id_token } = tokenResponse.data; // Contains the user's profile info
+    // Now use the id_token to authenticate the user in your app
+    const user = verifyGoogleToken(id_token);
+    const jwt_token = generateToken(user)
+
+    // Set the JWT as an HTTP-only cookie
+  res.cookie('jwt', jwt_token, {
+    httpOnly: true,       // Prevents client-side JavaScript access
+    sameSite: 'Strict',   // CSRF protection
+    maxAge: 3600000,      // 1 hour
+  });
+
+  // Redirect the user back to the frontend
+  res.redirect('http://localhost:5173');
+  } catch (error) {
+    res.status(500).send('Error exchanging code for token');
+    console.log(error)
+  }
+    
+});
+
 
 app.get('/now', async (req, res) => {
   try {
