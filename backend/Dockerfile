@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 3000
 
 # Start the API
-CMD ["nodemon","--legacy-watch", "index.js"]
+CMD ["nodemon","--legacy-watch", "src/index.js"]

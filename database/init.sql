@@ -2,10 +2,11 @@ USE mydb;
 
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    second_name VARCHAR(100) NOT NULL,
+    google_id VARCHAR(100),
     email VARCHAR(100) NOT NULL,
-    password_hash VARCHAR (100),
+    phone VARCHAR(9),
+    first_name VARCHAR(25),
+    second_name VARCHAR(25)
 );
 
 CREATE TABLE shelters (
@@ -13,7 +14,7 @@ CREATE TABLE shelters (
     name VARCHAR(100) NOT NULL,
     address VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    password_hash VARCHAR (100),
+    password_hash VARCHAR (100)
 );
 
 CREATE TABLE animals (
@@ -54,7 +55,7 @@ CREATE TABLE adoption_step (
     step_id INT AUTO_INCREMENT PRIMARY KEY,
     adoption_id INT NOT NULL,
     description VARCHAR(100) NOT NULL,
-    FOREIGN KEY (adoption_id) REFERENCES adoptions(adoption_id),
+    FOREIGN KEY (adoption_id) REFERENCES adoptions(adoption_id)
 );
 
 CREATE TABLE calendar_entries (
@@ -80,19 +81,3 @@ CREATE TABLE shelter_notifications (
     type VARCHAR(50) NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES shelters(shelter_id)
 );
-
--- Insert dummy data into users
-INSERT INTO users (name, second_name) VALUES
-('John', 'Doe'),
-('Jane', 'Smith'),
-('Alice', 'Johnson'),
-('Bob', 'Brown'),
-('Charlie', 'Davis');
-
--- Insert dummy data into calendar_entries
-INSERT INTO calendar_entries (owner_id, date, type) VALUES
-(1, '2024-12-25', 'Holiday'),
-(2, '2024-12-22', 'Meeting'),
-(3, '2024-12-23', 'Reminder'),
-(4, '2024-12-20', 'Event'),
-(5, '2024-12-31', 'New Year Party');

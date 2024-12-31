@@ -1,24 +1,19 @@
 import React from 'react'
-import { jwtDecode } from 'jwt-decode';
-import { Cookies, CookiesProvider, useCookies } from 'react-cookie';
-
+import Navbar from '../../components/Navbar'
+import axios from 'axios'
+axios.defaults.withCredentials = true;
 const Home = () => {
-  const [cookies, setCookie] = useCookies(['jwt'])
-  const getUserInfo = () => {
-    const jwt_token = cookies.get('jwt')
-    console.log(jwt_token)
-    const decoded_jwt =  jwtDecode(jwt_token)
-    console.log(decoded_jwt)
+  
+  const handleGetUserInfo = async () => {
+    const userInfo = await axios.get('http://localhost:3000/test/user')
+    console.log(userInfo)
   }
 
-
   return (
-    <CookiesProvider>
-      <div>
-        Welcome home 
-      </div>
-      <button onClick={() => getUserInfo()}>getUserInfo</button>
-    </CookiesProvider>
+    <>
+        <Navbar/>
+        <button onClick={handleGetUserInfo}>Get user info</button>
+    </>
   )
 }
 
