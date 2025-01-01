@@ -8,6 +8,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/authRoutes')
 const testRoutes = require('./routes/testRoutes')
+const animalRoutes = require('./routes/animalRoutes')
 const dotenv = require('dotenv').config()
 const {connectDB} = require('./config/db')
 
@@ -25,6 +26,7 @@ connectDB();
 
 app.use('/auth', authRoutes)
 app.use('/test', testRoutes)
+app.use('/api/animals', animalRoutes)
 
 
 

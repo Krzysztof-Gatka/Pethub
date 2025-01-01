@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const mysql = require('mysql2/promise');
 const {pool} = require('../config/db')
 const {verifyGoogleToken, generateToken} = require('../utils/jwtUtils');
-const { getUserIdByGoogleId, insertUser } = require('../repositories/userRepository');
+const { insertUser, getUserIdByEmail } = require('../repositories/userRepository');
 
 
 
@@ -22,7 +22,6 @@ const googleSignUp = (req, res) => {
   }
 
 const googleSignUpCallback = async (req, res) => {
-
   const { code, state } = req.query;
   try {
     const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
@@ -35,16 +34,15 @@ const googleSignUpCallback = async (req, res) => {
 
     const { id_token } = tokenResponse.data; 
     const user = verifyGoogleToken(id_token);
+    user.role = decodeURIComponent(state);
 
-    const existingUserId = await getUserIdByGoogleId(user.googleId);
-    if (existingUserId) {
-      return res.redirect(`http://localhost:5173/?signIn=${existingUserId}`);
+    const existingUserId = await getUserIdByEmail(user.email);
+    if (!existingUserId) {
+      await insertUser(user.email, user.role)
     }
 
-    await insertUser(user.googleId, user.email)
-    const user_id = await getUserIdByGoogleId(user.googleId)
+    const user_id = await getUserIdByEmail(user.email)
     user.userId = user_id
-    user.role = decodeURIComponent(state)
     const jwt_token = generateToken(user)
 
     res.cookie('jwt', jwt_token, {
@@ -53,7 +51,12 @@ const googleSignUpCallback = async (req, res) => {
       maxAge: 3600000,      // 1 hour
     });
 
-    res.redirect(`http://localhost:5173/signup/form?userId=${user_id}`);
+    if(!existingUserId) {
+      res.redirect(`http://localhost:5173/signup/form?userId=${user_id}`);
+    } else {
+      res.redirect(`http://localhost:5173/?signIn=${existingUserId}`);
+
+    }
     } catch (error) {
       res.status(500).send('Error exchanging code for token');
       console.log(error)
@@ -98,9 +101,40 @@ const setUserData = (req, res) => {
   
   }
 
+  const getUserSession = (req, res) => {
+    const token = req.cookies['jwt'];
+    if (!token) {
+      return res.status(401).json({ loggedIn: false });
+    }
+
+    try {
+      const user = jwt.verify(token, process.env.JWT_SECRET);
+      return res.status(200).json({ loggedIn: true, user });
+    } catch (err) {
+      return res.status(401).json({ loggedIn: false });
+    }
+  } 
+
+  const logout = (req, res) => {
+    res.clearCookie('jwt', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
+
+  }
+
 
   module.exports = {
     googleSignUp,
     googleSignUpCallback,
     setUserData,
+    getUserSession,
+    logout,
   }

@@ -1,9 +1,9 @@
 const { pool } = require('../config/db')
 
-const insertUser = async (googleId, email) => {
-    const query = `INSERT INTO users (google_id, email) VALUES (?, ?)`;
+const insertUser = async (email, role) => {
+    const query = `INSERT INTO users (email, role) VALUES (?, ?)`;
     try {
-        const [result] = await pool.query(query, [googleId, email]);
+        const [result] = await pool.query(query, [email, role]);
         return result;
     } catch (err) {
         console.error('Error inserting user:', err);
@@ -11,11 +11,11 @@ const insertUser = async (googleId, email) => {
     }
 };
 
-const getUserIdByGoogleId = async (googleId) => {
-    const query = `SELECT user_id FROM users WHERE google_id = ?`;
+const getUserIdByEmail = async (email) => {
+    const query = `SELECT id FROM users WHERE email = ?`;
     try {
-        const [rows] = await pool.query(query, [googleId]);
-        return rows.length > 0 ? rows[0].user_id : null;
+        const [rows] = await pool.query(query, [email]);
+        return rows.length > 0 ? rows[0].id : null;
     } catch (err) {
         console.error('Error selecting user:', err);
         throw err;
@@ -24,5 +24,5 @@ const getUserIdByGoogleId = async (googleId) => {
 
 module.exports = {
     insertUser,
-    getUserIdByGoogleId,
+    getUserIdByEmail,
 };
