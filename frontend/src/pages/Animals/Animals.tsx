@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ShelterLayout from '../../layouts/ShelterLayout'
 import { useAuth } from '../../hooks/useAuth';
 import AnimalCard from '../../components/shared/AnimalCard';
+import { Box, Container } from '@mui/material';
 
 const Animals = () => {
   const [animals, setAnimals] = useState([])
@@ -24,10 +25,12 @@ const Animals = () => {
   return (
     <ShelterLayout>
       Welcome to Animals page
-      <ul>
-        {/* {animals.map(animal => <li key={animal.id}>{animal.name} {animal.age} {animal.description}</li>)} */}
+      <Container 
+
+      >
         {animals.map(animal => <AnimalCard {...animal} key={animal.id}/>)}
-      </ul>
+      </Container>
+        {/* {animals.map(animal => <li key={animal.id}>{animal.name} {animal.age} {animal.description}</li>)} */}
     </ShelterLayout>
   )
 }

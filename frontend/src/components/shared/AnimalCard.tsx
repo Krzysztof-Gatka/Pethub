@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -26,24 +27,40 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalMode
     }
 
   return (
-    <Card sx={{ minWidth: 275 }}>
+
+    <Card sx={{ maxWidth: 345 }}>
+      <CardMedia
+        sx={{ height: 140 }}
+        image={img_url}
+        title="green iguana"
+      />
       <CardContent>
-        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+        <Typography gutterBottom variant="h5" component="div">
           {name}
         </Typography>
-        <Typography variant="h5" component="div">
-         {age} {id} {shelter_id}
-        </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {description}
         </Typography>
-        <img src={img_url} width={200} alt="" />
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={handleCardClick}>Learn More</Button>
+        <Button onClick={handleCardClick} size="small">Szczegóły</Button>
       </CardActions>
     </Card>
-  )
+  );
+    // <Card sx={{ minWidth: 275 }}>
+    //   <CardContent>
+    //     <Typography variant="h5" component="div">
+    //     {name}
+    //     </Typography>
+    //     <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+    //     {age} {id} {shelter_id} {description}
+    //     </Typography>
+    //     <img src={img_url} className="dog" width={100} height={100} style={{objectFit: 'cover'}} alt="" />
+    //   </CardContent>
+    //   <CardActions>
+    //     <Button size="small" onClick={handleCardClick}>Learn More</Button>
+    //   </CardActions>
+    // </Card>
 }
 
 export default AnimalCard

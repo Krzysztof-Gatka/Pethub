@@ -15,7 +15,10 @@ const getAllAnimals = async (email) => {
 };
 
 const getAnimalById = async (id) => {
-    const query = `SELECT * FROM animals WHERE id = ?`
+    const query = `SELECT a.id, a.name, a.age, a.description, a.shelter_id, i.img_url
+            FROM animals a
+            LEFT JOIN images i ON a.id = i.owner_id
+            WHERE a.id = ?`
     try {
         const [rows] = await pool.query(query, [id]);
         return rows.length > 0 ? rows[0] : null;
