@@ -1,88 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { useEffect } from 'react'
-import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home/Home'
 import Login from './pages/Login/Login'
+import SignUpGoogle from './pages/SignUpGoogle/SignUpGoogle'
+import { Container } from '@mui/material'
+import Animals from './pages/Animals/Animals'
+import { AuthProvider } from './context/AuthContext'
+import { useAuth } from './hooks/useAuth'
+import ShelterLayout from './layouts/ShelterLayout'
+import Animal from './pages/Animals/Animal'
+
 
 function App() {
-  const apiUrl = import.meta.env.VITE_API_URL;
-  const oauthclient = import.meta.env.VITE_O_AUTH_CLIENT_ID;
-  const oauthsecretkey = import.meta.env.VITE_O_AUTH_SECRET_KEY;
-  const [count, setCount] = useState(0)
-  const [apireload, setapireload] = useState('<dodaj d do /reloa w pethub/backend/index.js>')
-  const [msg, setMsg] = useState('<po kliknięciu powinna pojawić się godzina>')
-  const [users, setUsers] = useState([])
-
-  useEffect(() => {
-    fetch(`${apiUrl}/reload`)
-    .then(response => response.json())
-    .then(data => setapireload(data['data']))
-  },[])
-
-  
   return (
-    <>
+    <AuthProvider>
       <Routes>
+        {/* guest routes */}
         <Route path="/" element={<Home/>}/>
         <Route path="/login" element={<Login/>}/>
+        <Route path="/shelters" element={<Login/>}/>
+        <Route path="/animals/:id" element={<Animal/>} />
+        <Route path="/animals" element={<Animals/>} />
+
+        {/* routes shared between users and shelters */}
+        <Route path="/signup/form" element={<SignUpGoogle/>} />
+        <Route path="/notifications" element={<Home/>} />
+        <Route path="/appointments" element={<Home/>}/>
+        <Route path="/adoptions" element={<Home/>}/>
+        
+        {/* user routes */}
+        <Route path="/followed" element={<Home/>}/>
+
+        {/* shelter routes */}
+        <Route path="/shelter/animals" element={<Animals/>} />
+        <Route path="/shelter/animals/add" element={<Animals/>} />
+        <Route path="/shelter/animals/:id/edit" element={<Animals/>} />
+        <Route path="/shelter/animals/:id/delete" element={<Animals/>} />
+
+
       </Routes>
-    </>
-    // <>
-    //   <div>
-    //     <a href="https://vite.dev" target="_blank">
-    //       <img src={viteLogo} className="logo" alt="Vite logo" />
-    //     </a>
-    //     <a href="https://react.dev" target="_blank">
-    //       <img src={reactLogo} className="logo react" alt="React logo" />
-    //     </a>
-    //   </div>
-    //   <h1>Inżynierka Szkielet</h1>
-    //   <button onClick={() => handlelogin()}>Sign in with google</button>
-        
-    //   <h4>Zmień mnie żeby sprawdzić czy przeładowanie frontendu działa poprawnie (pethub/frontend/src/app.tsx)</h4>
-    //   <h4>{apireload}</h4>
-    //   <button onClick={
-    //     () => {
-    //       fetch(`${apiUrl}/now`)
-    //         .then(response => response.json())
-    //         .then(data => setMsg(data["current"]))
-    //     }
-        
-    //   }>
-    //       Sprawdź czy API działa poprawnie {msg}
-    //   </button>
-    //   <br />
-    //   <button onClick={
-    //     () => {
-    //       fetch(`${apiUrl}/users`)
-    //       .then(response => response.json())
-    //       .then(data => setUsers(data))
-    //     }
-    //   }>Sprawdź czy baza danych działa poprawnie</button>
-    //   {
-    //     users.length == 0 && <p>po kliknięciu powinna pojawić się lista użytkowników</p>
-    //   }
-    //   {
-    //     users.map((user) => {
-    //       return <h3 key={user['user_id']}>{user['name']}: {user['second_name']}</h3>
-      
-    //     })
-    //   }
-    //   <div className="card">
-    //     <button onClick={() => setCount((count) => count + 1)}>
-    //       count is {count}
-    //     </button>
-    //     <p>
-    //       Edit <code>src/App.tsx</code> and save to test HMR
-    //     </p>
-    //   </div>
-    //   <p className="read-the-docs">
-    //     Click on the Vite and React logos to learn more
-    //   </p>
-    // </>
+    </AuthProvider>
   )
 }
 

@@ -1,24 +1,28 @@
 import React from 'react'
-import { jwtDecode } from 'jwt-decode';
-import { CookiesProvider, useCookies } from 'react-cookie';
 
 
-const handlelogin = () => {
-  window.location.href = ('http://localhost:3000/auth/google');
+const USER_LOGIN_URL = 'http://localhost:3000/auth/google/signup?role=user'
+const SHELTER_LOGIN_URL = 'http://localhost:3000/auth/google/signup?role=shelter'
+
+const handleUserLogin = () => {
+  window.location.href = (USER_LOGIN_URL);
+}
+
+const handleShelterLogin = () => {
+  window.location.href = (SHELTER_LOGIN_URL)
 }
 
 
-const Login = () => {
-  
 
+const Login = () => {
   return (
     <>
-      <CookiesProvider>
         <div>
           Welcome to Login page
         </div>
-        <button onClick={() => handlelogin()}>Sign in with google</button>
-      </CookiesProvider>
+        <button onClick={() => handleUserLogin()}>Create User acoount</button>
+        <br></br>
+        <button onClick={() => handleShelterLogin()}>Create shelter account</button>
     </>
   )
 }
