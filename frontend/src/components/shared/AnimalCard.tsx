@@ -13,10 +13,11 @@ export interface AnimalModel {
     age: string;
     description: string;
     shelter_id: number;
+    img_url: string;
 }
 
 
-const AnimalCard = ({id, name, age, description, shelter_id}:AnimalModel) => {
+const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalModel) => {
 
     const navigate = useNavigate()
 
@@ -36,6 +37,7 @@ const AnimalCard = ({id, name, age, description, shelter_id}:AnimalModel) => {
         <Typography variant="body2">
           {description}
         </Typography>
+        <img src={img_url} width={200} alt="" />
       </CardContent>
       <CardActions>
         <Button size="small" onClick={handleCardClick}>Learn More</Button>

@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import ShelterLayout from './layouts/ShelterLayout'
 import Animal from './pages/Animals/Animal'
+import AnimalAdd from './pages/Animals/AnimalAdd'
 
 
 function App() {
@@ -32,7 +33,7 @@ function App() {
 
         {/* shelter routes */}
         <Route path="/shelter/animals" element={<Animals/>} />
-        <Route path="/shelter/animals/add" element={<Animals/>} />
+        <Route path="/shelter/animals/add" element={<AnimalAdd/>} />
         <Route path="/shelter/animals/:id/edit" element={<Animals/>} />
         <Route path="/shelter/animals/:id/delete" element={<Animals/>} />
 

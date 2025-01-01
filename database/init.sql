@@ -37,7 +37,7 @@ CREATE TABLE images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     owner_id INT,
     img_url VARCHAR(255)
-)
+);
 
 CREATE TABLE follows_animals (
     follower_id INT NOT NULL,
