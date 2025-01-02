@@ -37,8 +37,8 @@ const Animal = () => {
     const response = await axios.get(`${GET_WALKS_API_URL}?animalId=${id}`);
     setWalks(response.data)
   }
-  const [openScheduler, setOpenScheduler] = useState(false);
   
+  const [openScheduler, setOpenScheduler] = useState(false);
   const handleWalk = () => {
     setOpenScheduler(true);
   };
