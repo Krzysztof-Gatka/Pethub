@@ -91,8 +91,7 @@ CREATE TABLE walks (
     animal_id INT NOT NULL,
     user_id INT NOT NULL,
     date DATE NOT NULL,
-    time_slot TIME NOT NULL,
-    status ENUM('booked', 'completed', 'cancelled') DEFAULT 'booked',
+    time_slot INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (animal_id) REFERENCES animals(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
@@ -102,7 +101,7 @@ CREATE TABLE walks (
 INSERT INTO users (email, role)
 VALUES
     ('krzysztof.gatka00@gmail.com', 'shelter'),
-    ('krzysztof.gatka.webdev@gmail.com', 'shelter'),
+    ('krzysztof.gatka.webdev@gmail.com', 'user'),
     ('krzysztof.gatka.bigdata@gmail.com', 'user');
 
 
@@ -127,3 +126,10 @@ VALUES
     (4, 'https://res.cloudinary.com/dnwj6jjqh/image/upload/v1735756097/t0uvbvrwhdjtoqszrmcq.jpg');
 
 
+INSERT INTO walks (animal_id, user_id, date, time_slot) VALUES
+(1, 3, '2025-01-03', 10),
+(1, 3, '2025-01-03', 11),
+(2, 3, '2025-01-03', 9),
+(3, 3, '2025-01-04', 12),
+(4, 3, '2025-01-04', 10),
+(5, 3, '2025-01-05', 10);

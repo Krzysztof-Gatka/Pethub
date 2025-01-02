@@ -21,9 +21,12 @@ import { useAuth } from '../../hooks/useAuth';
 import { AnimalModel } from '../../components/shared/AnimalCard';
 import { Walk } from '../../models/Walk';
 import { getCurrentSqlDate } from '../../utils/dateUtils';
+import WalkScheduler from '../../components/shared/WalkScheduler';
+
 
 const GET_WALKS_API_URL='http://localhost:3000/api/animals/animal/walks'
-import WalkScheduler from '../../components/shared/WalkScheduler';
+
+
 
 const Animal = () => {
   const { id } = useParams();
@@ -37,10 +40,11 @@ const Animal = () => {
     const response = await axios.get(`${GET_WALKS_API_URL}?animalId=${id}`);
     setWalks(response.data)
   }
-  const [openScheduler, setOpenScheduler] = useState(false);
   
+  const [openScheduler, setOpenScheduler] = useState(false);
   const handleWalk = () => {
-    setOpenScheduler(true);
+    setOpenScheduler(!openScheduler);
+    console.log('handle walk')
   };
 
   const handleBookWalk = async () => {
@@ -155,18 +159,15 @@ const Animal = () => {
           </Grid>
         </Grid>
       </Container>
-      <Box>
-        <p>walks data</p>
-        {walks.map(walk => 
-        <p key={walk.id}> {walk.id} {walk.animal_id} {walk.user_id} {walk.date} {walk.time_slot} {walk.status} 
-          </p>)}
-        <Button onClick={handleBookWalk}>Book a walk at 12 8:00</Button>
-      </Box>
-      <WalkScheduler 
-        animalId={animal.id}
-        open={openScheduler}
-        onClose={() => setOpenScheduler(false)}
-      />
+      {
+        openScheduler &&
+        <WalkScheduler 
+          animalId={animal.id}
+          open={openScheduler}
+          onClose={() => setOpenScheduler(false)}
+          user={user}
+        />
+      }
     </ShelterLayout>
   );
 };

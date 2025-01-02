@@ -9,6 +9,7 @@ const upload = multer({storage})
 router.get('/', getAnimals)
 
 router.get('/user/walks', getUserWalks)
+
 router.get('/animal/walks', getAnimalWalks)
 
 

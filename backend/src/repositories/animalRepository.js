@@ -58,9 +58,20 @@ const getBookedSlots = async(animalId, date) => {
     }
 }
 
+const selectAnimalBookedWalks = async(animalId, date) => {
+    const query = `SELECT * FROM walks WHERE animal_id = ? AND date = ?`
+    try {
+        const [bookedWalks] = await pool.query(query, [animalId, date])
+        return bookedWalks
+    } catch(err) {
+        console.error("error selecting wallks", err)
+    }
+
+}
+
 
 const insertBookedSlot = async(animalId, userId, date, timeSlot) => {
-    const query = `INSERT INTO walks (animal_id, user_id, date, time_slot, status) VALUES (?, ?, ?, ?, 'booked')`
+    const query = `INSERT INTO walks (animal_id, user_id, date, time_slot) VALUES (?, ?, ?, ?)`
     try {
         const inserted = await pool.query(query, [animalId, userId, date, timeSlot])
         return inserted
@@ -77,7 +88,6 @@ const selectUserWalks = async(userId) => {
     } catch(err) {
         console.error("error selecting user slots", err)
     }
-
 }
 
 const selectAnimalWalks = async(animalId) => {
@@ -100,5 +110,6 @@ module.exports = {
     getBookedSlots,
     insertBookedSlot,
     selectUserWalks,
-    selectAnimalWalks
+    selectAnimalWalks,
+    selectAnimalBookedWalks,
 }
