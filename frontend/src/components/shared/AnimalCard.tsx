@@ -19,7 +19,6 @@ export interface AnimalModel {
 
 
 const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalModel) => {
-
     const navigate = useNavigate()
 
     const handleCardClick = () => {
@@ -29,11 +28,15 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalMode
   return (
 
     <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
+      {img_url &&
+        <CardMedia
         sx={{ height: 140 }}
         image={img_url}
-        title="green iguana"
+        title={name}
       />
+      
+      }
+      
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {name}
@@ -47,20 +50,6 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalMode
       </CardActions>
     </Card>
   );
-    // <Card sx={{ minWidth: 275 }}>
-    //   <CardContent>
-    //     <Typography variant="h5" component="div">
-    //     {name}
-    //     </Typography>
-    //     <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-    //     {age} {id} {shelter_id} {description}
-    //     </Typography>
-    //     <img src={img_url} className="dog" width={100} height={100} style={{objectFit: 'cover'}} alt="" />
-    //   </CardContent>
-    //   <CardActions>
-    //     <Button size="small" onClick={handleCardClick}>Learn More</Button>
-    //   </CardActions>
-    // </Card>
 }
 
 export default AnimalCard
