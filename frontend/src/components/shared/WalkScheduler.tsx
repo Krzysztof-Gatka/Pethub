@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { DialogContent, Box, Button, TextField, Typography } from '@mui/material';
+import axios from 'axios';
+import { Walk } from '../../models/Walk';
+import { time } from 'console';
 
 interface WalkSchedulerProps {
   animalId: number;
@@ -7,9 +10,76 @@ interface WalkSchedulerProps {
   onClose: () => void;
 }
 
-const WalkScheduler: React.FC<WalkSchedulerProps> = ({ animalId, open, onClose }) => {
+interface TimeSlot {
+  hour: number;
+  status: 'locked' | 'booked' | 'available'
+}
+
+
+const WalkScheduler: React.FC<WalkSchedulerProps> = ({ user, animalId, open, onClose }) => {
   const [selectedDate, setSelectedDate] = useState('');
-  const timeSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+
+
+  
+  const timeSlots:TimeSlot[] = [
+    {hour: 10, status: 'available'},
+    {hour: 11, status: 'available'},
+    {hour: 12, status: 'available'},
+    {hour: 13, status: 'available'},
+    {hour: 14, status: 'available'},
+    {hour: 15, status: 'available'},
+  ];
+
+  const [slots, setSlots] = useState<TimeSlot[]>(timeSlots)
+  const [selectedSlot, setSelectedSlot] = useState(null)
+
+  const handleSlotClick = (slot) => {
+    console.log(slot)
+    setSelectedSlot(slot.hour)
+  }
+
+
+  
+  const fetchWalks = async (animalId, date) => {
+    console.log('fetching walks')
+    const response = await axios.get(`http://localhost:3000/api/animals/animal/walks?animalId=${animalId}&date=${date}`)
+    const bookedWalks = response.data
+    if(bookedWalks) {
+      const bookedSlotsHours = bookedWalks.map(walk => walk.time_slot)
+      const updatedSlots = slots.map(slot => {
+        return {...slot, status: bookedSlotsHours.some(hour => hour == slot.hour) ? 'locked' : 'available'}
+      })
+      setSlots(updatedSlots)
+      console.log(bookedSlotsHours)
+    }
+  }
+
+  const handleBook = async () => {
+    console.log('handling book')
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/animals/book-walk',
+        {
+          animalId,
+          userId: user.userId,
+          date: selectedDate,
+          timeSlot: selectedSlot
+        }
+      )
+
+      alert('termin został zarezerwowany')
+    } catch (err) {
+      console.log(err)
+    }
+    
+  }
+
+  const handleDataChange = (e) => {
+    fetchWalks(animalId, e.target.value);
+    setSelectedDate(e.target.value);
+    setSelectedSlot(null);
+    console.log(e.target.value);
+  }
 
   return (
     <Box sx={{ mt: 4, p: 3, bgcolor: 'background.paper', borderRadius: 1 }}>
@@ -21,25 +91,45 @@ const WalkScheduler: React.FC<WalkSchedulerProps> = ({ animalId, open, onClose }
           type="date"
           fullWidth
           value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={handleDataChange}
           InputProps={{
             inputProps: { min: new Date().toISOString().split('T')[0] }
           }}
         />
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
-          {timeSlots.map((time) => (
-            <Button 
-              key={time} 
-              variant="outlined" 
-              sx={{ py: 2 }}
-            >
-              {time}
-            </Button>
-          ))}
-        </Box>
-        <Button variant="contained" color="primary">
-          Zarezerwuj termin
-        </Button>
+
+        {
+          selectedDate != '' &&
+            (
+              <>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+                {slots.map((slot) => (
+                  <Button 
+                    key={slot.hour} 
+                    variant={(selectedSlot == slot.hour) ? "contained" : "outlined"} 
+                    sx={{ py: 2 }}
+                    disabled={slot.status == 'locked'}
+                    onClick={() => handleSlotClick(slot)}
+                  >
+                    {`${slot.hour}:00`}
+                  </Button>
+                ))}
+                </Box>
+                {
+                  selectedSlot && 
+
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={handleBook}
+                  >
+                    Zarezerwuj termin
+                  </Button>
+                }
+                
+              </>
+              
+            )
+        }
       </Box>
     </Box>
   );

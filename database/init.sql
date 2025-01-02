@@ -101,7 +101,7 @@ CREATE TABLE walks (
 INSERT INTO users (email, role)
 VALUES
     ('krzysztof.gatka00@gmail.com', 'shelter'),
-    ('krzysztof.gatka.webdev@gmail.com', 'shelter'),
+    ('krzysztof.gatka.webdev@gmail.com', 'user'),
     ('krzysztof.gatka.bigdata@gmail.com', 'user');
 
 

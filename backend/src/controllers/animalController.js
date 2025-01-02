@@ -1,7 +1,7 @@
 const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
-const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks} = require('../repositories/animalRepository')
+const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks, selectAnimalBookedWalks} = require('../repositories/animalRepository')
 
 const getAnimals = async (req, res) => {
     try {
@@ -51,6 +51,13 @@ const addAnimal = async (req, res) => {
   }
 }
 
+const getAnimalWalks = async (req, res) => {
+  const { animalId, date } = req.query;
+  const bookedWalks = await selectAnimalBookedWalks(animalId, date)
+  console.log(bookedWalks)
+  res.json(bookedWalks)
+}
+
 const getAnimalWalkSlots = async (req, res) => {
     const { animalId } = req.params;
     console.log(animalId)
@@ -68,8 +75,6 @@ const getAnimalWalkSlots = async (req, res) => {
 const bookWalk = async (req, res) => {
   console.log(req.body)
   const { animalId, userId, date, timeSlot } = req.body;
-
-
   try {
     const result = insertBookedSlot(animalId, userId, date, timeSlot)
     res.status(201).json({ message: 'Walk successfully booked.' });
@@ -86,11 +91,7 @@ const getUserWalks = async (req, res) => {
   res.json(walks);
 }
 
-const getAnimalWalks = async (req, res) => {
-  const {animalId} = req.query;
-  const walks = await selectAnimalWalks(Number(animalId))
-  res.json(walks);
-}
+
 
 
 
