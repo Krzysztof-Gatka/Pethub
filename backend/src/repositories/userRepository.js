@@ -22,7 +22,19 @@ const getUserIdByEmail = async (email) => {
     }
 };
 
+const getUserRoleByEmail = async (email) => {
+    const query = `SELECT role FROM users WHERE email = ?`;
+    try {
+        const [rows] = await pool.query(query, [email]);
+        return rows.length > 0 ? rows[0].role : null;
+    } catch (err) {
+        console.error('Error selecting user:', err);
+        throw err;
+    }
+};
+
 module.exports = {
     insertUser,
     getUserIdByEmail,
+    getUserRoleByEmail,
 };
