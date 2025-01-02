@@ -59,8 +59,8 @@ const getBookedSlots = async(animalId, date) => {
 }
 
 
-const insertBookedSlot = async(animalId, userId, date, timeSLot) => {
-    const query = `INSERT INTO walks (animal_id, user_id, date, time_slot) VALUES (?, ?, ?, ?)`
+const insertBookedSlot = async(animalId, userId, date, timeSlot) => {
+    const query = `INSERT INTO walks (animal_id, user_id, date, time_slot, status) VALUES (?, ?, ?, ?, 'booked')`
     try {
         const inserted = await pool.query(query, [animalId, userId, date, timeSlot])
         return inserted

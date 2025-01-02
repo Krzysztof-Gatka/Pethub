@@ -14,7 +14,7 @@ router.get('/animal/walks', getAnimalWalks)
 
 router.get('/:animalId/available-slots', getAnimalWalkSlots)
 
-router.post('/:animalId/book-walk', bookWalk)
+router.post('/book-walk', bookWalk)
 
 router.get('/:id', getAnmlById)
 router.post('/add', upload.single('image'), addAnimal)

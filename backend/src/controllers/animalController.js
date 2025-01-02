@@ -52,21 +52,23 @@ const addAnimal = async (req, res) => {
 }
 
 const getAnimalWalkSlots = async (req, res) => {
-  const { animalId } = req.params;
+    const { animalId } = req.params;
+    console.log(animalId)
     const { date } = req.query; // e.g., "2025-01-05"
-    const bookedSlots = getBookedSlots(animalId, date)
-    // const bookedSlots = await db.query(
-        // 'SELECT time_slot FROM walks WHERE animal_id = ? AND date = ?',
-        // [animalId, date]
-    // );
+    console.log(date)
+    const bookedSlots = await getBookedSlots(animalId, date)
+    console.log(bookedSlots)
+    return res.json(bookedSlots)
+
     const allSlots = [...Array(24).keys()].map(hour => `${hour.toString().padStart(2, '0')}:00:00`);
     const availableSlots = allSlots.filter(slot => bookedSlots.some(b => b.time_slot === slot));
     res.json(availableSlots);
 }
 
 const bookWalk = async (req, res) => {
-  const { animalId } = req.params;
-  const { userId, date, timeSlot } = req.body;
+  console.log(req.body)
+  const { animalId, userId, date, timeSlot } = req.body;
+
 
   try {
     const result = insertBookedSlot(animalId, userId, date, timeSlot)
