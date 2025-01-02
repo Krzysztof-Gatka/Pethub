@@ -1,7 +1,7 @@
 const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
-const {getAllAnimals, getAnimalById, insertImg, insertAnimalData} = require('../repositories/animalRepository')
+const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks} = require('../repositories/animalRepository')
 
 const getAnimals = async (req, res) => {
     try {
@@ -51,10 +51,55 @@ const addAnimal = async (req, res) => {
   }
 }
 
+const getAnimalWalkSlots = async (req, res) => {
+    const { animalId } = req.params;
+    console.log(animalId)
+    const { date } = req.query; // e.g., "2025-01-05"
+    console.log(date)
+    const bookedSlots = await getBookedSlots(animalId, date)
+    console.log(bookedSlots)
+    return res.json(bookedSlots)
+
+    const allSlots = [...Array(24).keys()].map(hour => `${hour.toString().padStart(2, '0')}:00:00`);
+    const availableSlots = allSlots.filter(slot => bookedSlots.some(b => b.time_slot === slot));
+    res.json(availableSlots);
+}
+
+const bookWalk = async (req, res) => {
+  console.log(req.body)
+  const { animalId, userId, date, timeSlot } = req.body;
+
+
+  try {
+    const result = insertBookedSlot(animalId, userId, date, timeSlot)
+    res.status(201).json({ message: 'Walk successfully booked.' });
+  } catch (error) {
+      res.status(500).json({ error: 'Error booking the walk.' });
+  }
+
+}
+
+const getUserWalks = async (req, res) => {
+  const { userId } = req.query;
+  console.log(userId)
+  const walks = await selectUserWalks(Number(userId));
+  res.json(walks);
+}
+
+const getAnimalWalks = async (req, res) => {
+  const {animalId} = req.query;
+  const walks = await selectAnimalWalks(Number(animalId))
+  res.json(walks);
+}
+
 
 
 module.exports = {
     getAnimals,
     getAnmlById,
     addAnimal,
+    getAnimalWalkSlots,
+    bookWalk,
+    getUserWalks,
+    getAnimalWalks
 }

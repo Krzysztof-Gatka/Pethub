@@ -86,6 +86,18 @@ CREATE TABLE notifications (
     FOREIGN KEY (owner_id) REFERENCES users(id)
 );
 
+CREATE TABLE walks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    animal_id INT NOT NULL,
+    user_id INT NOT NULL,
+    date DATE NOT NULL,
+    time_slot TIME NOT NULL,
+    status ENUM('booked', 'completed', 'cancelled') DEFAULT 'booked',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (animal_id) REFERENCES animals(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 
 INSERT INTO users (email, role)
 VALUES

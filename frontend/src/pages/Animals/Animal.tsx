@@ -19,16 +19,38 @@ import PetsIcon from '@mui/icons-material/Pets';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { useAuth } from '../../hooks/useAuth';
 import { AnimalModel } from '../../components/shared/AnimalCard';
+import { Walk } from '../../models/Walk';
+import { getCurrentSqlDate } from '../../utils/dateUtils';
+
+const GET_WALKS_API_URL='http://localhost:3000/api/animals/animal/walks'
 
 const Animal = () => {
   const { id } = useParams();
   const [animal, setAnimal] = useState<AnimalModel | null>(null);
   const { user, isLoggedIn } = useAuth();
+  const [walks, setWalks] = useState<Walk[]>([])
 
-  const handleWalk = () => {
+  const handleWalk = async () => {
     console.log('handling walk button');
     console.log(user);
+    const response = await axios.get(`${GET_WALKS_API_URL}?animalId=${id}`);
+    setWalks(response.data)
   };
+
+  const handleBookWalk = async () => {
+    console.log('handlingBookwalkbutton');
+    try {
+      await axios.post('http://localhost:3000/api/animals/book-walk', {
+        animalId: animal?.id,
+        userId: user?.userId,
+        date: getCurrentSqlDate(),
+        timeSlot: '08:00:00'
+      })
+    } catch (err) {
+      console.log('err:', err)
+    }
+    
+  }
 
   const handleFollow = () => {
     console.log('handling follow button');
@@ -126,6 +148,13 @@ const Animal = () => {
           </Grid>
         </Grid>
       </Container>
+      <Box>
+        <p>walks data</p>
+        {walks.map(walk => 
+        <p key={walk.id}> {walk.id} {walk.animal_id} {walk.user_id} {walk.date} {walk.time_slot} {walk.status} 
+          </p>)}
+        <Button onClick={handleBookWalk}>Book a walk at 12 8:00</Button>
+      </Box>
     </ShelterLayout>
   );
 };
