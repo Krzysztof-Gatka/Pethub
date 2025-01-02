@@ -1,7 +1,7 @@
 const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
-const {getAllAnimals, getAnimalById, insertImg, insertAnimalData} = require('../repositories/animalRepository')
+const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots} = require('../repositories/animalRepository')
 
 const getAnimals = async (req, res) => {
     try {
@@ -51,10 +51,24 @@ const addAnimal = async (req, res) => {
   }
 }
 
+const getAnimalWalkSlots = async (req, res) => {
+  const { animalId } = req.params;
+    const { date } = req.query; // e.g., "2025-01-05"
+    const bookedSlots = getBookedSlots(animalId, date)
+    // const bookedSlots = await db.query(
+        // 'SELECT time_slot FROM walks WHERE animal_id = ? AND date = ?',
+        // [animalId, date]
+    // );
+    const allSlots = [...Array(24).keys()].map(hour => `${hour.toString().padStart(2, '0')}:00:00`);
+    const availableSlots = allSlots.filter(slot => !bookedSlots.some(b => b.time_slot === slot));
+    res.json(availableSlots);
+}
+
 
 
 module.exports = {
     getAnimals,
     getAnmlById,
     addAnimal,
+    getAnimalWalkSlots,
 }

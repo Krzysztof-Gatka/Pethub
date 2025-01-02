@@ -48,10 +48,21 @@ const insertImg = async (animalId, url) => {
     }
 }
 
+const getBookedSlots = async(animalId, date) => {
+    const query = `SELECT time_slot FROM walks WHERE animal_id = ? AND date = ?`
+    try {
+        const bookedSlots = await pool.query(query, [animalId, date])
+        return imageResult
+    } catch(err) {
+        console.error("error selecting slots", err)
+    }
+}
+
 
 module.exports = {
     getAllAnimals,
     getAnimalById,
     insertAnimalData,
     insertImg,
+    getBookedSlots,
 }
