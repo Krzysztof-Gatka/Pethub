@@ -23,6 +23,7 @@ import { Walk } from '../../models/Walk';
 import { getCurrentSqlDate } from '../../utils/dateUtils';
 
 const GET_WALKS_API_URL='http://localhost:3000/api/animals/animal/walks'
+import WalkScheduler from '../../components/shared/WalkScheduler';
 
 const Animal = () => {
   const { id } = useParams();
@@ -30,11 +31,15 @@ const Animal = () => {
   const { user, isLoggedIn } = useAuth();
   const [walks, setWalks] = useState<Walk[]>([])
 
-  const handleWalk = async () => {
+  const handleWalk2 = async () => {
     console.log('handling walk button');
     console.log(user);
     const response = await axios.get(`${GET_WALKS_API_URL}?animalId=${id}`);
     setWalks(response.data)
+  const [openScheduler, setOpenScheduler] = useState(false);
+
+  const handleWalk = () => {
+    setOpenScheduler(true);
   };
 
   const handleBookWalk = async () => {
@@ -64,6 +69,7 @@ const Animal = () => {
     const fetchAnimal = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/animals/${id}`);
+        console.log('Animal data:', response.data);
         setAnimal(response.data);
       } catch (err) {
         console.error('Błąd podczas pobierania danych:', err);
@@ -155,6 +161,11 @@ const Animal = () => {
           </p>)}
         <Button onClick={handleBookWalk}>Book a walk at 12 8:00</Button>
       </Box>
+      <WalkScheduler 
+        animalId={animal.id}
+        open={openScheduler}
+        onClose={() => setOpenScheduler(false)}
+      />
     </ShelterLayout>
   );
 };
