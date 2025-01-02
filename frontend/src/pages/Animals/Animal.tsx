@@ -1,60 +1,133 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { AnimalModel } from '../../components/shared/AnimalCard'
-import { useParams } from 'react-router-dom'
-import ShelterLayout from '../../layouts/ShelterLayout'
-import { Button } from '@mui/material'
-import { useAuth } from '../../hooks/useAuth'
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import {
+  Container,
+  Card,
+  CardMedia,
+  Typography,
+  Box,
+  Button,
+  Paper,
+  Grid,
+  Divider,
+  Chip
+} from '@mui/material';
+import ShelterLayout from '../../layouts/ShelterLayout';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import PetsIcon from '@mui/icons-material/Pets';
+import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import { useAuth } from '../../hooks/useAuth';
+import { AnimalModel } from '../../components/shared/AnimalCard';
 
 const Animal = () => {
-    const {user, isLoggedIn, loading, logout} = useAuth()
+  const { id } = useParams();
+  const [animal, setAnimal] = useState<AnimalModel | null>(null);
+  const { user, isLoggedIn } = useAuth();
 
-    const params = useParams()
-    const [animal, setAnimal] = useState<null | AnimalModel>(null)
+  const handleWalk = () => {
+    console.log('handling walk button');
+    console.log(user);
+  };
 
-    const handleWalk = () => {
-        console.log('handling walk button');
-        console.log(user);
-    }
+  const handleFollow = () => {
+    console.log('handling follow button');
+  };
 
-    const handleFollow = () => {
-        console.log('handling follow buton');
-    }
+  const handleAdopt = () => {
+    console.log('handling adopt button');
+  };
 
-    const handleAdopt = () => {
-        console.log('handling adopt button');
-    }
+  useEffect(() => {
+    const fetchAnimal = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/animals/${id}`);
+        setAnimal(response.data);
+      } catch (err) {
+        console.error('Błąd podczas pobierania danych:', err);
+      }
+    };
 
-    useEffect( () => {
-        const fetchAnimal =  async () => {
-          try {
-            const response = await axios.get(`http://localhost:3000/api/animals/${params.id}`)
-            console.log(response)
-            setAnimal(response.data)
-          } catch (err:unknown) {
-            console.log(err)
-          }
-        }
-    
-        fetchAnimal();
-      }, [])
+    fetchAnimal();
+  }, [id]);
 
+  if (!animal) {
+    return <div>Ładowanie...</div>;
+  }
 
   return (
     <ShelterLayout>
-        <li>{animal?.id}</li>
-        <li>{animal?.name}</li>
-        <li>{animal?.description}</li>
-        <li>{animal?.shelter_id}</li>
-        <img src={animal?.img_url} width={200}alt="" />
-        <Button disabled={!isLoggedIn} onClick={handleFollow}>Follow</Button>
-        <br></br>
-        <Button disabled={!isLoggedIn} onClick={handleWalk}>Walk</Button>
-        <br></br>
-        <Button disabled={!isLoggedIn} onClick={handleAdopt}>Adopt</Button>
-    </ShelterLayout>
-      
-  )
-}
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Card elevation={3}>
+              <CardMedia
+                component="img"
+                height="500"
+                image={animal.img_url || "/api/placeholder/800/500"}
+                alt={animal.name}
+                sx={{ objectFit: 'contain' }}
+              />
+            </Card>
+          </Grid>
 
-export default Animal
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3 }}>
+              <Typography variant="h4" gutterBottom>
+                {animal.name}
+              </Typography>
+              
+              <Box sx={{ my: 2 }}>
+                <Chip label={`Wiek: ${animal.age} lat`} sx={{ mr: 1, mb: 1 }} />
+              </Box>
+
+              <Typography variant="body1" paragraph>
+                {animal.description}
+              </Typography>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ mt: 3, display: 'flex', gap: 2, flexDirection: 'column' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  startIcon={<PetsIcon />}
+                  size="large"
+                  onClick={handleAdopt}
+                  disabled={!isLoggedIn}
+                >
+                  Adoptuj
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  startIcon={<DirectionsWalkIcon />}
+                  size="large"
+                  onClick={handleWalk}
+                  disabled={!isLoggedIn}
+                >
+                  Umów spacer
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  startIcon={<FavoriteIcon />}
+                  size="large"
+                  onClick={handleFollow}
+                  disabled={!isLoggedIn}
+                >
+                  Obserwuj
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </ShelterLayout>
+  );
+};
+
+export default Animal;
