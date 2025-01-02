@@ -21,9 +21,13 @@ import { useAuth } from '../../hooks/useAuth';
 import { AnimalModel } from '../../components/shared/AnimalCard';
 import { Walk } from '../../models/Walk';
 import { getCurrentSqlDate } from '../../utils/dateUtils';
+import WalkScheduler from '../../components/shared/WalkScheduler';
+
 
 const GET_WALKS_API_URL='http://localhost:3000/api/animals/animal/walks'
-import WalkScheduler from '../../components/shared/WalkScheduler';
+const WALKS_OPEN=10
+const WALKS_CLOSE=14
+
 
 const Animal = () => {
   const { id } = useParams();
