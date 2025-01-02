@@ -5,6 +5,9 @@ import { useAuth } from '../../hooks/useAuth';
 import AnimalCard from '../../components/shared/AnimalCard';
 import { Box, Container } from '@mui/material';
 
+
+
+
 const Animals = () => {
   const [animals, setAnimals] = useState([])
 

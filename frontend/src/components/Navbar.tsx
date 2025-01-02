@@ -9,9 +9,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '../hooks/useAuth';
 
 
+const SIGNIN_URL = 'http://localhost:3000/auth/google/signin'
+
 export default function ButtonAppBar() {
     const navigate = useNavigate();
     const {user, isLoggedIn, loading, logout } = useAuth();
+
+    const handleSignIn = () => {
+      window.location.href = (SIGNIN_URL);
+    }
 
     const handleLogout = async () => {
       await logout();
@@ -30,7 +36,7 @@ export default function ButtonAppBar() {
               <Button color="inherit" onClick={() => navigate('/animals')}>Animals</Button>
               <Button color="inherit" onClick={() => navigate('/shelters')}>Shelters</Button>
               <Button color="inherit" onClick={() => {navigate('/login')}}>Sign up</Button>
-              <Button color="inherit" >Sign in</Button>
+              <Button color="inherit" onClick={handleSignIn}>Sign in</Button>
             </>
           )}
 

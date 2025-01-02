@@ -3,10 +3,59 @@ const jwt = require('jsonwebtoken')
 const mysql = require('mysql2/promise');
 const {pool} = require('../config/db')
 const {verifyGoogleToken, generateToken} = require('../utils/jwtUtils');
-const { insertUser, getUserIdByEmail } = require('../repositories/userRepository');
+const { insertUser, getUserIdByEmail, getUserRoleByEmail } = require('../repositories/userRepository');
 
 
 
+
+const googleSignIn = (req, res) => {
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${process.env.O_AUTH_CLIENT_ID}` +
+    `&redirect_uri=${process.env.GOOGLE_SIGNIN_CALLBACK}` +
+    `&response_type=code` +
+    `&scope=openid%20email%20profile` +
+    `&prompt=consent`;
+  res.redirect(authUrl);
+}
+
+const googleSignInCallback = async (req, res) => {
+  const {code} = req.query;
+  try {
+    const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+      code,
+      client_id: process.env.O_AUTH_CLIENT_ID,
+      client_secret: process.env.O_AUTH_SECRET_KEY,
+      redirect_uri: process.env.GOOGLE_SIGNIN_CALLBACK,
+      grant_type: 'authorization_code',
+    });
+
+    const { id_token } = tokenResponse.data; 
+    const user = verifyGoogleToken(id_token);
+
+    const existingUserId = await getUserIdByEmail(user.email);
+    if (!existingUserId) {
+      return res.redirect('http://localhost:5173/')
+    }
+
+    const userRole = await getUserRoleByEmail(user.email);
+
+    user.userId = existingUserId
+    user.role = userRole
+    const jwt_token = generateToken(user)
+
+    res.cookie('jwt', jwt_token, {
+      httpOnly: true,       // Prevents client-side JavaScript access
+      sameSite: 'Strict',   // CSRF protection
+      maxAge: 3600000,      // 1 hour
+    });
+
+    res.redirect(`http://localhost:5173`);
+
+    } catch (error) {
+      res.status(500).send('Error exchanging code for token');
+      console.log(error)
+    }
+}
 
 
 const googleSignUp = (req, res) => {
@@ -134,6 +183,8 @@ const setUserData = (req, res) => {
   module.exports = {
     googleSignUp,
     googleSignUpCallback,
+    googleSignIn,
+    googleSignInCallback,
     setUserData,
     getUserSession,
     logout,
