@@ -126,6 +126,9 @@ const Animal = () => {
           </Grid>
         </Grid>
       </Container>
+      <Box>
+        <p>walks data</p>
+      </Box>
     </ShelterLayout>
   );
 };
