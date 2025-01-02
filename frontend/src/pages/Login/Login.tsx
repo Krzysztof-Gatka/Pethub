@@ -18,7 +18,7 @@ const Login = () => {
   return (
     <>
         <div>
-          Welcome to Login page
+          Welcome to Sign Up page
         </div>
         <button onClick={() => handleUserLogin()}>Create User acoount</button>
         <br></br>
