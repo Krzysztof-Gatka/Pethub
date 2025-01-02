@@ -26,7 +26,10 @@ connectDB();
 
 app.use('/auth', authRoutes)
 app.use('/test', testRoutes)
+
 app.use('/api/animals', animalRoutes)
+
+
 
 
 

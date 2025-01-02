@@ -46,6 +46,7 @@ const Animal = () => {
         <li>{animal?.name}</li>
         <li>{animal?.description}</li>
         <li>{animal?.shelter_id}</li>
+        <img src={animal?.img_url} width={200}alt="" />
         <Button disabled={!isLoggedIn} onClick={handleFollow}>Follow</Button>
         <br></br>
         <Button disabled={!isLoggedIn} onClick={handleWalk}>Walk</Button>
