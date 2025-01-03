@@ -12,6 +12,7 @@ import AccountTypeSelector from './components/shared/AccountTypeSelector'
 import RegistrationMethodSelector from './components/shared/RegistrationMethodSelector'
 import Followed from './pages/Followed/Followed'
 import { UserProfileForm, ShelterProfileForm } from './components/shared/ProfileForm';
+import Walks from './pages/Walks/Walks'
 function App() {
   return (
     <AuthProvider>
@@ -37,6 +38,8 @@ function App() {
         
         {/* user routes */}
         <Route path="/followed" element={<Followed/>}/>
+        <Route path="/walks" element={<Walks/>}/>
+        
 
         {/* shelter routes */}
         <Route path="/shelter/animals" element={<Animals/>} />
