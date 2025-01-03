@@ -101,7 +101,11 @@ const googleSignUpCallback = async (req, res) => {
     });
 
     if(!existingUserId) {
-      res.redirect(`http://localhost:5173/signup/userForm?userId=${user_id}`);
+      if(user.role == 'user') {
+        res.redirect(`http://localhost:5173/userProfileForm?userId=${user_id}`);
+      } else {
+        res.redirect(`http://localhost:5173/shelterProfileForm?userId=${user_id}`);
+      }
     } else {
       res.redirect(`http://localhost:5173`);
 
