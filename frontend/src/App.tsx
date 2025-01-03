@@ -11,7 +11,7 @@ import AnimalAdd from './pages/Animals/AnimalAdd'
 import AccountTypeSelector from './components/shared/AccountTypeSelector'
 import RegistrationMethodSelector from './components/shared/RegistrationMethodSelector'
 import Followed from './pages/Followed/Followed'
-
+import { UserProfileForm, ShelterProfileForm } from './components/shared/ProfileForm';
 function App() {
   return (
     <AuthProvider>
@@ -24,8 +24,11 @@ function App() {
         <Route path="/animals" element={<Animals/>} />
 
         {/* registration routes - tylko podstawowe */}
+        {/* registration routes */}
         <Route path="/signup" element={<AccountTypeSelector />} />
         <Route path="/signup/:type" element={<RegistrationMethodSelector />} />
+        <Route path="/userProfileForm" element={<UserProfileForm />} />
+        <Route path="/shelterProfileForm" element={<ShelterProfileForm />} />
 
         {/* routes shared between users and shelters */}
         <Route path="/notifications" element={<Home/>} />
@@ -44,5 +47,4 @@ function App() {
     </AuthProvider>
   )
 }
-
 export default App
