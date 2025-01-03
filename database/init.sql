@@ -83,6 +83,8 @@ CREATE TABLE notifications (
     owner_id INT NOT NULL,
     date DATE NOT NULL,
     type VARCHAR(50) NOT NULL,
+    status TINYINT(1) NOT NULL DEFAULT 0,
+    description TEXT,
     FOREIGN KEY (owner_id) REFERENCES users(id)
 );
 

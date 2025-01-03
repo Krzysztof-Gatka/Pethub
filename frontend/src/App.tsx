@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home'
 import Login from './pages/Login/Login'
 import { Container } from '@mui/material'
@@ -13,6 +13,8 @@ import RegistrationMethodSelector from './components/shared/RegistrationMethodSe
 import Followed from './pages/Followed/Followed'
 import { UserProfileForm, ShelterProfileForm } from './components/shared/ProfileForm';
 import Walks from './pages/Walks/Walks'
+import NotificationList from './pages/Notifications/NotificationList'
+
 function App() {
   return (
     <AuthProvider>
@@ -32,7 +34,7 @@ function App() {
         <Route path="/shelterProfileForm" element={<ShelterProfileForm />} />
 
         {/* routes shared between users and shelters */}
-        <Route path="/notifications" element={<Home/>} />
+        <Route path="/notifications" element={<NotificationList/>} />
         <Route path="/appointments" element={<Home/>}/>
         <Route path="/adoptions" element={<Home/>}/>
         
