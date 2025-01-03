@@ -77,6 +77,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
       const response = await axios.post(`http://localhost:3000/api/profiles/shelter/create`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      navigate('/')
     } catch(error) {
       console.log('Błąd podczas zapisywania profilu schroniska')
     }

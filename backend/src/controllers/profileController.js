@@ -1,7 +1,7 @@
 const cloudinary = require('cloudinary').v2
 const axios = require('axios')
 const jwt = require('jsonwebtoken');
-const { insertUserProfile, selectUserProfileById, insertShelterProfile, insertShelterImg } = require('../repositories/profileRepository');
+const { insertUserProfile, selectUserProfileById, insertShelterProfile, insertShelterImg, selectShelterProfileById } = require('../repositories/profileRepository');
 const { insertImg } = require('../repositories/animalRepository');
 
 
@@ -35,6 +35,12 @@ const createShelterProfile = async (req, res) => {
     console.log(req.body)
     try {
         const {userId, name, address, description, phone} = req.body;
+        console.log(userId)
+        const profileExists = await selectShelterProfileById(userId);
+        if(profileExists.length != 0) {
+            console.log('profile already exists')
+            return res.status(201).json({message: 'Profile already exists'})
+        }
         const result = await cloudinary.uploader.upload(req.file.path);
         const insertedId = await insertShelterProfile(userId, name, address, description, phone)
         const insertedImg = await insertShelterImg(insertedId, result.secure_url)

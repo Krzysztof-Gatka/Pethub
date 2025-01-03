@@ -25,6 +25,16 @@ const insertUserProfile = async (user_id, first_name, second_name, age, sex, pho
     }
 }
 
+const selectShelterProfileById = async(shelter_id) => {
+    const query = `SELECT shelter_id FROM shelter_profiles WHERE shelter_id = ?`
+    try {
+        const [result] = await pool.query(query, [shelter_id])
+        return result
+    } catch (err) {
+        console.error('error', err)
+    }
+}
+
 const selectUserProfileById = async(user_id) => {
     const query = `SELECT user_id FROM user_profiles WHERE user_id = ?`
     try {
@@ -52,5 +62,6 @@ module.exports = {
     insertUserProfile,
     selectUserProfileById,
     insertShelterProfile,
-    insertShelterImg
+    insertShelterImg,
+    selectShelterProfileById
 }
