@@ -14,6 +14,7 @@ const {connectDB} = require('./config/db')
 const followRoutes = require('./routes/followRoutes')
 const notificationRoutes = require('./routes/notificationRoutes');
 
+const profileRoutes = require('./routes/profileRoutes')
 
 
 app.use(cookieParser());
@@ -34,6 +35,7 @@ app.use('/api/follows', followRoutes);
 
 app.use('/api/notifications', notificationRoutes);
 
+app.use('/api/profiles', profileRoutes)
 
 
 

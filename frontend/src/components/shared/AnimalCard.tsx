@@ -18,7 +18,6 @@ export interface AnimalModel {
 }
 
 
-
 const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalModel) => {
     const navigate = useNavigate()
 
