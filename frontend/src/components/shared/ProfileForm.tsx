@@ -14,6 +14,8 @@ import {
   MenuItem
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import axios from 'axios';
+import { useAuth } from '../../hooks/useAuth';
 
 interface FormData {
   firstName?: string;
@@ -33,7 +35,9 @@ interface ProfileFormProps {
 const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const userId = searchParams.get('userId');
+  const {user} = useAuth();
+  const [image, setImage] = useState<File | null>(null);
+  
   
   const [formData, setFormData] = useState<FormData>({
     ...(type === 'user' ? {
@@ -49,6 +53,37 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
       description: ''
     })
   });
+
+  const handleUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    formData.userId = user?.userId;
+    console.log(formData)
+    try {
+      const response = await axios.post(`http://localhost:3000/api/profiles/user/create`, formData);
+      console.log(response.data)
+    } catch(error) {
+      console.log('Błąd podczas zapisywania profilu')
+    }
+  }
+
+  const handleShelterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('userId:', user?.userId)
+    formData.userId = user?.userId;
+    console.log(formData)
+    if(image) formData.image = image;
+
+    try {
+      const response = await axios.post(`http://localhost:3000/api/profiles/shelter/create`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      navigate('/')
+    } catch(error) {
+      console.log('Błąd podczas zapisywania profilu schroniska')
+    }
+  }
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +102,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setImage(file)
       console.log('Wybrano plik:', file);
       // Tutaj logika uploadu pliku
     }
@@ -81,7 +117,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
         
         <Card sx={{ mt: 4 }}>
           <CardContent>
-            <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
+            <Box component="form" onSubmit={type == 'user' ? handleUserSubmit : handleShelterSubmit} sx={{ p: 2 }}>
               {type === 'user' ? (
                 <>
                   <TextField

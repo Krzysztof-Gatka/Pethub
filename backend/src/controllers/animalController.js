@@ -33,6 +33,7 @@ cloudinary.config({
 
 const addAnimal = async (req, res) => {
   console.log('test')
+  console.log(req.body)
   try {
     const {name, age, description, shelter_id } = req.body;
 

@@ -12,14 +12,18 @@ CREATE TABLE user_profiles (
     user_id INT NOT NULL,
     first_name VARCHAR(255),
     second_name VARCHAR(255),
+    age INT,
+    sex VARCHAR(255),
+    phone_number VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE shelter_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     shelter_id INT NOT NULL,
-    organization_name VARCHAR(255),
+    name VARCHAR(255),
     address VARCHAR(255),
+    description VARCHAR(255),
     phone_number VARCHAR(20),
     FOREIGN KEY (shelter_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -34,6 +38,12 @@ CREATE TABLE animals (
 );
 
 CREATE TABLE images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    owner_id INT,
+    img_url VARCHAR(255)
+);
+
+CREATE TABLE shelter_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     owner_id INT,
     img_url VARCHAR(255)
@@ -102,9 +112,7 @@ CREATE TABLE walks (
 
 INSERT INTO users (email, role)
 VALUES
-    ('krzysztof.gatka00@gmail.com', 'shelter'),
-    ('krzysztof.gatka.webdev@gmail.com', 'user'),
-    ('krzysztof.gatka.bigdata@gmail.com', 'user');
+    ('test@shelter.com', 'shelter');
 
 
 INSERT INTO animals (name, age, description, shelter_id)
@@ -114,11 +122,11 @@ VALUES
     ('Milo', 2, 'A curious and affectionate cat who enjoys cuddles and exploring.', 1),
     ('Luna', 1, 'A sweet and shy kitten, still getting used to her new surroundings.', 1),
     ('Rocky', 4, 'A loyal and protective German shepherd, great for security.', 1),
-    ('Daisy', 6, 'A gentle and elderly dog, loves short walks and relaxing.', 2),
-    ('Simba', 3, 'A playful and mischievous cat with a lot of energy.', 2),
-    ('Chloe', 2, 'A friendly and sociable cat who loves meeting new people.', 2),
-    ('Buddy', 7, 'A very calm and laid-back dog who enjoys lounging around.', 2),
-    ('Shadow', 5, 'An independent and mysterious cat, mostly keeps to herself.', 2);
+    ('Daisy', 6, 'A gentle and elderly dog, loves short walks and relaxing.', 1),
+    ('Simba', 3, 'A playful and mischievous cat with a lot of energy.', 1),
+    ('Chloe', 2, 'A friendly and sociable cat who loves meeting new people.', 1),
+    ('Buddy', 7, 'A very calm and laid-back dog who enjoys lounging around.', 1),
+    ('Shadow', 5, 'An independent and mysterious cat, mostly keeps to herself.', 1);
 
 INSERT INTO images (owner_id, img_url)
 VALUES
@@ -128,10 +136,4 @@ VALUES
     (4, 'https://res.cloudinary.com/dnwj6jjqh/image/upload/v1735756097/t0uvbvrwhdjtoqszrmcq.jpg');
 
 
-INSERT INTO walks (animal_id, user_id, date, time_slot) VALUES
-(1, 3, '2025-01-03', 10),
-(1, 3, '2025-01-03', 11),
-(2, 3, '2025-01-03', 9),
-(3, 3, '2025-01-04', 12),
-(4, 3, '2025-01-04', 10),
-(5, 3, '2025-01-05', 10);
+
