@@ -10,25 +10,21 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
-import axios from 'axios';
 
 const RegistrationMethodSelector: React.FC = () => {
   const navigate = useNavigate();
-  const { type } = useParams(); // 'user-methods' lub 'shelter-methods'
+  const { type } = useParams();
   
   const isUser = type === 'user-methods';
   const title = isUser ? 'użytkownika' : 'schroniska';
 
-  // Na razie te handlery będą tylko logować akcję
   const handleStandardRegistration = () => {
-    console.log('Wybrano rejestrację przez email');
-    // Tutaj później dodamy nawigację
+    navigate(`/signup/${type}/email`);
   };
 
   const handleGoogleRegistration = () => {
-    console.log('Wybrano rejestrację przez Google');
-    // Tutaj później dodamy nawigację
-    window.location.href = `http://localhost:3000/auth/google/signup?role=${type == 'user-methods' ? 'user' : 'shelter'}`
+    const profileType = isUser ? 'user' : 'shelter';
+    window.location.href = `http://localhost:3000/auth/google/signup?role=${profileType}&redirect_url=${encodeURIComponent(`http://localhost:5173/${profileType}ProfileForm`)}`
   };
 
   return (
