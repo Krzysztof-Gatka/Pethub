@@ -10,6 +10,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
+import axios from 'axios';
 
 const RegistrationMethodSelector: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const RegistrationMethodSelector: React.FC = () => {
   const handleGoogleRegistration = () => {
     console.log('Wybrano rejestrację przez Google');
     // Tutaj później dodamy nawigację
+    window.location.href = `http://localhost:3000/auth/google/signup?role=${type == 'user-methods' ? 'user' : 'shelter'}`
   };
 
   return (

@@ -101,9 +101,9 @@ const googleSignUpCallback = async (req, res) => {
     });
 
     if(!existingUserId) {
-      res.redirect(`http://localhost:5173/signup/form?userId=${user_id}`);
+      res.redirect(`http://localhost:5173/signup/userForm?userId=${user_id}`);
     } else {
-      res.redirect(`http://localhost:5173/?signIn=${existingUserId}`);
+      res.redirect(`http://localhost:5173`);
 
     }
     } catch (error) {
