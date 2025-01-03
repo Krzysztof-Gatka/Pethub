@@ -66,6 +66,7 @@ export default function ButtonAppBar() {
               <Button color="inherit" onClick={() => navigate('/animals')}>Zwierzęta</Button>
               <Button color="inherit" onClick={() => navigate('/shelters')}>Schroniska</Button>
               <Button color="inherit" onClick={() => navigate('/followed')}>Obserwowane</Button>
+              <Button color="inherit" onClick={() => navigate('/walks')}>Spacery</Button>
               <Button
                 color="inherit"
                 onClick={() => navigate('/notifications')}
