@@ -11,7 +11,7 @@ const testRoutes = require('./routes/testRoutes')
 const animalRoutes = require('./routes/animalRoutes')
 const dotenv = require('dotenv').config()
 const {connectDB} = require('./config/db')
-
+const followRoutes = require('./routes/followRoutes')
 
 
 app.use(cookieParser());
@@ -28,6 +28,8 @@ app.use('/auth', authRoutes)
 app.use('/test', testRoutes)
 
 app.use('/api/animals', animalRoutes)
+app.use('/api/follows', followRoutes);
+
 
 
 

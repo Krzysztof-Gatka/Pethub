@@ -10,6 +10,7 @@ import Animal from './pages/Animals/Animal'
 import AnimalAdd from './pages/Animals/AnimalAdd'
 import AccountTypeSelector from './components/shared/AccountTypeSelector'
 import RegistrationMethodSelector from './components/shared/RegistrationMethodSelector'
+import Followed from './pages/Followed/Followed'
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
         <Route path="/adoptions" element={<Home/>}/>
         
         {/* user routes */}
-        <Route path="/followed" element={<Home/>}/>
+        <Route path="/followed" element={<Followed/>}/>
 
         {/* shelter routes */}
         <Route path="/shelter/animals" element={<Animals/>} />

@@ -23,47 +23,60 @@ import { Walk } from '../../models/Walk';
 import { getCurrentSqlDate } from '../../utils/dateUtils';
 import WalkScheduler from '../../components/shared/WalkScheduler';
 
-
-const GET_WALKS_API_URL='http://localhost:3000/api/animals/animal/walks'
-
-
+const GET_WALKS_API_URL = 'http://localhost:3000/api/animals/animal/walks';
+const FOLLOW_API_URL = 'http://localhost:3000/api/follows/animal';
 
 const Animal = () => {
   const { id } = useParams();
   const [animal, setAnimal] = useState<AnimalModel | null>(null);
   const { user, isLoggedIn } = useAuth();
-  const [walks, setWalks] = useState<Walk[]>([])
-
-  const handleWalk2 = async () => {
-    console.log('handling walk button');
-    console.log(user);
-    const response = await axios.get(`${GET_WALKS_API_URL}?animalId=${id}`);
-    setWalks(response.data)
-  }
-  
+  const [walks, setWalks] = useState<Walk[]>([]);
+  const [isFollowed, setIsFollowed] = useState(false);
   const [openScheduler, setOpenScheduler] = useState(false);
+
   const handleWalk = () => {
     setOpenScheduler(!openScheduler);
-    console.log('handle walk')
+    console.log('handle walk');
   };
 
   const handleBookWalk = async () => {
-    console.log('handlingBookwalkbutton');
     try {
       await axios.post('http://localhost:3000/api/animals/book-walk', {
         animalId: animal?.id,
         userId: user?.userId,
         date: getCurrentSqlDate(),
-        timeSlot: '08:00:00'
-      })
+        timeSlot: '08:00:00',
+      });
     } catch (err) {
-      console.log('err:', err)
+      console.error('Error booking walk:', err);
     }
-    
-  }
+  };
 
-  const handleFollow = () => {
-    console.log('handling follow button');
+  const handleFollow = async () => {
+    if (!animal || !id) return;
+
+    try {
+      if (isFollowed) {
+        await axios.delete(`${FOLLOW_API_URL}/delete`, {
+          data: {
+            userId: user?.userId,
+            targetId: id,
+            type: 'animal',
+          },
+        });
+        setIsFollowed(false);
+      } else {
+        await axios.post(`${FOLLOW_API_URL}/add`, {
+          userId: user?.userId,
+          targetId: id,
+          type: 'animal',
+        });
+        setIsFollowed(true);
+      }
+    } catch (err) {
+      console.error('Error toggling follow:', err);
+      alert('Wystąpił problem z obserwowaniem zwierzęcia.');
+    }
   };
 
   const handleAdopt = () => {
@@ -74,15 +87,26 @@ const Animal = () => {
     const fetchAnimal = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/animals/${id}`);
-        console.log('Animal data:', response.data);
         setAnimal(response.data);
       } catch (err) {
-        console.error('Błąd podczas pobierania danych:', err);
+        console.error('Error fetching animal data:', err);
+      }
+    };
+
+    const fetchFollowStatus = async () => {
+      try {
+        const response = await axios.get(`${FOLLOW_API_URL}/${id}?userId=${user?.userId}`);
+        setIsFollowed(response.data.followed);
+      } catch (err) {
+        console.error('Error fetching follow status:', err);
       }
     };
 
     fetchAnimal();
-  }, [id]);
+    if (isLoggedIn) {
+      fetchFollowStatus();
+    }
+  }, [id, user, isLoggedIn]);
 
   if (!animal) {
     return <div>Ładowanie...</div>;
@@ -109,7 +133,7 @@ const Animal = () => {
               <Typography variant="h4" gutterBottom>
                 {animal.name}
               </Typography>
-              
+
               <Box sx={{ my: 2 }}>
                 <Chip label={`Wiek: ${animal.age} lat`} sx={{ mr: 1, mb: 1 }} />
               </Box>
@@ -144,30 +168,37 @@ const Animal = () => {
                   Umów spacer
                 </Button>
                 <Button
-                  variant="outlined"
-                  color="primary"
+                  variant="outlined" // Używamy obrysu
                   fullWidth
                   startIcon={<FavoriteIcon />}
                   size="large"
                   onClick={handleFollow}
                   disabled={!isLoggedIn}
+                  sx={{
+                    color: isFollowed ? '#9c27b0' : 'primary.main', // Zmieniamy kolor tekstu
+                    borderColor: isFollowed ? '#9c27b0' : 'primary.main', // Zmieniamy kolor obrysu
+                    '&:hover': {
+                      borderColor: isFollowed ? '#7b1fa2' : 'primary.dark', // Zmieniamy kolor obrysu na hover
+                      color: isFollowed ? '#7b1fa2' : 'primary.dark', // Zmieniamy kolor tekstu na hover
+                    },
+                  }}
                 >
-                  Obserwuj
+                  {isFollowed ? 'Przestań obserwować' : 'Obserwuj'}
                 </Button>
+
               </Box>
             </Paper>
           </Grid>
         </Grid>
       </Container>
-      {
-        openScheduler &&
-        <WalkScheduler 
+      {openScheduler && (
+        <WalkScheduler
           animalId={animal.id}
           open={openScheduler}
           onClose={() => setOpenScheduler(false)}
           user={user}
         />
-      }
+      )}
     </ShelterLayout>
   );
 };
