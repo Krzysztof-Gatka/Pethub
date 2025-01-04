@@ -10,7 +10,7 @@ interface WalkCardProps {
   onCancelWalk: (id: number) => void;
 }
 
-const WalkCard = ({ id, animalName, shelterName, walkTime, imageUrl, onCancelWalk }: WalkCardProps) => {
+const WalkCard = ({ id, animalName, date, shelterName, walkTime, imageUrl, onCancelWalk }: WalkCardProps) => {
   return (
     <Card sx={{ 
       height: '100%',
@@ -35,7 +35,7 @@ const WalkCard = ({ id, animalName, shelterName, walkTime, imageUrl, onCancelWal
           Schronisko: {shelterName}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Termin spaceru: {walkTime}
+          Termin spaceru: {date.split('T')[0]} {walkTime}:00
         </Typography>
       </CardContent>
       <Box sx={{ p: 2 }}>

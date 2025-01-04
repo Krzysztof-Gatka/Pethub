@@ -13,7 +13,7 @@ const dotenv = require('dotenv').config()
 const {connectDB} = require('./config/db')
 const followRoutes = require('./routes/followRoutes')
 const notificationRoutes = require('./routes/notificationRoutes');
-
+const walkRoutes = require('./routes/walkRoutes')
 
 
 app.use(cookieParser());
@@ -31,7 +31,7 @@ app.use('/test', testRoutes)
 
 app.use('/api/animals', animalRoutes)
 app.use('/api/follows', followRoutes);
-
+app.use('/api/walks', walkRoutes)
 app.use('/api/notifications', notificationRoutes);
 
 

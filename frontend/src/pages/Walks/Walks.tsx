@@ -6,11 +6,12 @@ import ShelterLayout from '../../layouts/ShelterLayout';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 
 interface Walk {
+ walk_id:number;
  id: number;
- animalName: string; 
+ name: string; 
  shelterName: string;
- walkTime: string;
- imageUrl: string;
+ time_slot: number;
+ img_url: string;
 }
 
 const Walks = () => {
@@ -30,22 +31,25 @@ const Walks = () => {
 // }, []);
 
 //to czeka na dane z api
+const fetchWalks = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/walks', { withCredentials: true });
+    console.log(response.data.walks);
+    setWalks(response.data.walks);
+  } catch (error) {
+    console.error('Error fetching walks:', error);
+  }
+};
  useEffect(() => {
-   const fetchWalks = async () => {
-     try {
-       const response = await axios.get('http://localhost:3000/api/animals/walks');
-       setWalks(response.data);
-     } catch (error) {
-       console.error('Error fetching walks:', error);
-     }
-   };
    fetchWalks();
  }, []);
 
  const handleCancelWalk = async (walkId: number) => {
+  console.log(walkId)
    try {
-     await axios.delete(`http://localhost:3000/api/animals/walks/${walkId}`);
-     setWalks(walks.filter(walk => walk.id !== walkId));
+     await axios.delete(`http://localhost:3000/api/walks/${walkId}`);
+    //  setWalks(walks.filter(walk => walk.id !== walkId));
+     fetchWalks();
    } catch (error) {
      console.error('Error canceling walk:', error);
    }
@@ -68,14 +72,15 @@ const Walks = () => {
 
        <Grid container spacing={3}>
          {walks.map((walk) => (
-           <Grid item xs={12} sm={6} md={4} key={walk.id}>
+           <Grid item xs={12} sm={6} md={4} key={walk.walk_id}>
              <WalkCard
                id={walk.id}
-               animalName={walk.animalName}
+               animalName={walk.name}
                shelterName={walk.shelterName}
-               walkTime={walk.walkTime}
-               imageUrl={walk.imageUrl}
-               onCancelWalk={handleCancelWalk}
+               date={walk.date}
+               walkTime={walk.time_slot}
+               imageUrl={walk.img_url}
+               onCancelWalk={() => handleCancelWalk(walk.walk_id)}
              />
            </Grid>
          ))}
