@@ -17,6 +17,7 @@ import NotificationList from './pages/Notifications/NotificationList'
 import SignUpForm from './components/shared/SignUpForm';
 import SignInForm from './components/shared/SignInForm';
 import AdoptionForm from './pages/Adoptions/AdoptionForm';
+import Shelters from './pages/Shelters/Shelters';
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
         <Route path="/" element={<Home/>}/>
         <Route path="/signinform" element={<SignInForm/>}/>
         <Route path="/signin" element={<Login/>}/>
-        <Route path="/shelters" element={<Login/>}/>
+        <Route path="/shelters" element={<Shelters/>}/>
         <Route path="/animals/:id" element={<Animal/>} />
         <Route path="/animals" element={<Animals/>} />
         <Route path="/signupform/:role" element={<SignUpForm/>}/>
