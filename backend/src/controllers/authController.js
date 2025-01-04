@@ -235,6 +235,7 @@ const setUserData = (req, res) => {
         sameSite: 'Strict',   // CSRF protection
         maxAge: 3600000,      // 1 hour
       });
+      console.log('cookie wyslane')
       res.status(201).json({user})
 
 

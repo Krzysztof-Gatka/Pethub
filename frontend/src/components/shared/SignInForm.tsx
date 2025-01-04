@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../hooks/useAuth';
 
 
 interface FormData {
@@ -18,6 +19,8 @@ interface FormData {
 const API_URL = 'http://localhost:3000'
 
 const SignInForm = () => {
+    const {user} = useAuth();
+
     const [formData, setFormData] = useState<FormData>({
         email:'',
         password:''
@@ -30,9 +33,10 @@ const SignInForm = () => {
         try {
             const response = await axios.post(
                 `${API_URL}/auth/signin`,
-                formData,
+                formData,{withCredentials: true}
             )
             console.log(response)
+
             navigate('/')
 
         } catch (err) {
