@@ -14,7 +14,7 @@ const {connectDB} = require('./config/db')
 const followRoutes = require('./routes/followRoutes')
 const notificationRoutes = require('./routes/notificationRoutes');
 const walkRoutes = require('./routes/walkRoutes')
-
+const profileRoutes = require('./routes/profileRoutes')
 
 app.use(cookieParser());
 app.use(morgan('dev'))
@@ -33,6 +33,7 @@ app.use('/api/animals', animalRoutes)
 app.use('/api/follows', followRoutes);
 app.use('/api/walks', walkRoutes)
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/profiles', profileRoutes)
 
 
 

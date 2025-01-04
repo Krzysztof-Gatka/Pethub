@@ -23,6 +23,10 @@ CREATE TABLE shelter_profiles (
     shelter_id INT NOT NULL,
     name VARCHAR(255),
     address VARCHAR(255),
+    city VARCHAR(255),
+    street VARCHAR(255),
+    postal_code VARCHAR(255),
+    building VARCHAR(255),
     description VARCHAR(255),
     phone_number VARCHAR(20),
     FOREIGN KEY (shelter_id) REFERENCES users(id) ON DELETE CASCADE
