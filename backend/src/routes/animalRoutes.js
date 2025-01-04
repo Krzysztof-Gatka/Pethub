@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAnimals, getAnmlById, addAnimal, getAnimalWalkSlots, bookWalk, getUserWalks, getAnimalWalks } = require('../controllers/animalController');
+const { getAnimals, getAnmlById, addAnimal, getAnimalWalkSlots, bookWalk, getUserWalks, getAnimalWalks, getAnimalsByShelterId } = require('../controllers/animalController');
 const router = express.Router();
 const multer = require('multer')
 
@@ -7,6 +7,7 @@ const storage = multer.diskStorage({})
 const upload = multer({storage})
 
 router.get('/', getAnimals)
+router.get('/shelter', getAnimalsByShelterId)
 
 router.get('/user/walks', getUserWalks)
 

@@ -16,7 +16,7 @@ CREATE TABLE user_profiles (
     sex VARCHAR(255),
     phone_number VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE shelter_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -114,9 +114,17 @@ CREATE TABLE walks (
 );
 
 
-INSERT INTO users (email, role)
+INSERT INTO users (email, password_hash, role)
 VALUES
-    ('test@shelter.com', 'shelter');
+    ('kontakt@napaluchu.waw.pl', 'test', 'shelter'),
+    ('korabiewice@viva.org.pl', 'test', 'shelter'),
+    ('kontakt@celestynow.org.pl', 'test', 'shelter');
+
+INSERT INTO shelter_profiles (shelter_id, name, street, building, city, postal_code, description, phone_number)
+VALUES
+    (1, 'Schronisko Na Paluchu',  'Paluch', '2', 'Warszawa', '02-147', 'Największe schronisko dla bezdomnych zwierząt w Warszawie', '228681579'),
+    (2, 'Schronisko w Korabiewicach',  'Korabiewice', '11', 'Puszcza Mariańska', '96-330', 'Schronisko prowadzone przez Fundację Viva', '725850950'),
+    (3, 'Schronisko w Celestynowie',  'Prosta', '3', 'Celestynów', '05-430', 'Schronisko dla bezdomnych zwierząt', '227897061');
 
 
 INSERT INTO animals (name, age, description, shelter_id)

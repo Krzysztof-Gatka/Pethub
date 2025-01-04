@@ -22,45 +22,54 @@ const Shelters = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
 
+  const fetchShelters = async () => {
+    const response = await axios.get('http://localhost:3000/api/shelter/profiles')
+    const shelters = response.data;
+    console.log(shelters)
+    setShelters(shelters)
+    setFilteredShelters(shelters)
+  }
+
   useEffect(() => {
     // Przykładowe dane do testowania interfejsu
-    const testShelters: ShelterModel[] = [
-      {
-        shelter_id: 1,
-        name: "Schronisko Na Paluchu",
-        street: "ul. Paluch 2",
-        city: "Warszawa",
-        postal_code: "02-147",
-        building: "",
-        description: "Największe schronisko dla bezdomnych zwierząt w Warszawie",
-        phone: "+48 22 868 15 79",
-        email: "kontakt@napaluchu.waw.pl"
-      },
-      {
-        shelter_id: 2,
-        name: "Schronisko w Korabiewicach",
-        street: "Korabiewice",
-        building: "11",
-        city: "Puszcza Mariańska",
-        postal_code: "96-330",
-        description: "Schronisko prowadzone przez Fundację Viva",
-        phone: "+48 725 850 950",
-        email: "korabiewice@viva.org.pl"
-      },
-      {
-        shelter_id: 3,
-        name: "Schronisko w Celestynowie",
-        street: "ul. Prosta",
-        building: "3",
-        city: "Celestynów",
-        postal_code: "05-430",
-        description: "Schronisko dla bezdomnych zwierząt",
-        phone: "+48 22 789 70 61",
-        email: "kontakt@celestynow.org.pl"
-      }
-    ];
-    setShelters(testShelters);
-    setFilteredShelters(testShelters);
+    fetchShelters();
+    // const testShelters: ShelterModel[] = [
+    //   {
+    //     shelter_id: 1,
+    //     name: "Schronisko Na Paluchu",
+    //     street: "ul. Paluch 2",
+    //     city: "Warszawa",
+    //     postal_code: "02-147",
+    //     building: "",
+    //     description: "Największe schronisko dla bezdomnych zwierząt w Warszawie",
+    //     phone: "+48 22 868 15 79",
+    //     email: "kontakt@napaluchu.waw.pl"
+    //   },
+    //   {
+    //     shelter_id: 2,
+    //     name: "Schronisko w Korabiewicach",
+    //     street: "Korabiewice",
+    //     building: "11",
+    //     city: "Puszcza Mariańska",
+    //     postal_code: "96-330",
+    //     description: "Schronisko prowadzone przez Fundację Viva",
+    //     phone: "+48 725 850 950",
+    //     email: "korabiewice@viva.org.pl"
+    //   },
+    //   {
+    //     shelter_id: 3,
+    //     name: "Schronisko w Celestynowie",
+    //     street: "ul. Prosta",
+    //     building: "3",
+    //     city: "Celestynów",
+    //     postal_code: "05-430",
+    //     description: "Schronisko dla bezdomnych zwierząt",
+    //     phone: "+48 22 789 70 61",
+    //     email: "kontakt@celestynow.org.pl"
+    //   }
+    // ];
+    // setShelters(testShelters);
+    // setFilteredShelters(testShelters);
   }, []);
 
   const handleFilterChange = (filters: ShelterFilters) => {
