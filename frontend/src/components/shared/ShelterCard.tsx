@@ -14,7 +14,7 @@ const ShelterCard: React.FC<ShelterCardProps> = ({
   postal_code,
   building,
   description,
-  phone,
+  phone_number,
   email,
   isLoggedIn,
   isFollowed,
@@ -49,7 +49,7 @@ const ShelterCard: React.FC<ShelterCardProps> = ({
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <PhoneIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
           <Typography variant="body2" color="text.secondary">
-            {phone}
+            {`${phone_number.split('').slice(0,3).join('')} ${phone_number.split('').slice(3,6).join('')} ${phone_number.split('').slice(6,9).join('')}`}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

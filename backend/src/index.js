@@ -15,6 +15,7 @@ const followRoutes = require('./routes/followRoutes')
 const notificationRoutes = require('./routes/notificationRoutes');
 const walkRoutes = require('./routes/walkRoutes')
 const profileRoutes = require('./routes/profileRoutes')
+const shelterRoutes = require('./routes/shelterRoutes');
 
 app.use(cookieParser());
 app.use(morgan('dev'))
@@ -34,7 +35,7 @@ app.use('/api/follows', followRoutes);
 app.use('/api/walks', walkRoutes)
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/profiles', profileRoutes)
-
+app.use('/api/shelter', shelterRoutes);
 
 
 

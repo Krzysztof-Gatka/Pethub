@@ -2,7 +2,7 @@ export interface ShelterModel {
     shelter_id: number;
     name: string;
     description: string;
-    phone: string;
+    phone_number: string;
     email: string;
     city: string;
     street: string;
