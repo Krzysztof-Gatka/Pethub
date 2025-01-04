@@ -83,7 +83,7 @@ export default function ButtonAppBar() {
                 Powiadomienia
               </Button>
               <Button color="inherit" onClick={() => navigate('/appointments')}>Spotkania</Button>
-              <Button color="inherit" onClick={() => navigate('/adoptions')}>Adopcje</Button>
+              <Button color="inherit" onClick={() => navigate('/adoptions')}>Moje Adopcje</Button>
               <Button color="inherit" onClick={handleLogout}>Wyloguj</Button>
             </>
           )}

@@ -24,6 +24,9 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalMode
     const handleCardClick = () => {
         navigate(`/animals/${id}`)
     }
+    const handleAdopt = (animalId: number) => {
+      navigate(`/adopt/${animalId}`);
+    };
 
   return (
 
@@ -47,6 +50,9 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}:AnimalMode
       </CardContent>
       <CardActions>
         <Button onClick={handleCardClick} size="small">Szczegóły</Button>
+      </CardActions>
+      <CardActions>
+        <Button onClick={() => handleAdopt(id)} size="small">Adoptuj</Button>
       </CardActions>
     </Card>
   );

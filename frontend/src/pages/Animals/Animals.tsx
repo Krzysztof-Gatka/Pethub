@@ -49,6 +49,9 @@ const Animals = () => {
   const handleAnimalDetails = (animalId) => {
     navigate(`/animals/${animalId}`);
   };
+  const handleAdopt = (animalId) => {
+    navigate(`/adopt/${animalId}`);
+  };
 
   return (
     <ShelterLayout>
@@ -109,6 +112,7 @@ const Animals = () => {
                     variant="contained" 
                     color="primary" 
                     fullWidth
+                    onClick={() => handleAdopt(animal.id)}
                   >
                     Adoptuj
                   </Button>

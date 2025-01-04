@@ -16,6 +16,7 @@ import Walks from './pages/Walks/Walks'
 import NotificationList from './pages/Notifications/NotificationList'
 import SignUpForm from './components/shared/SignUpForm';
 import SignInForm from './components/shared/SignInForm';
+import AdoptionForm from './pages/Adoptions/AdoptionForm';
 
 function App() {
   return (
@@ -45,6 +46,8 @@ function App() {
         {/* user routes */}
         <Route path="/followed" element={<Followed/>}/>
         <Route path="/walks" element={<Walks/>}/>
+        <Route path="/adopt" element={<AdoptionForm />} />
+        <Route path="/adopt/:animalId" element={<AdoptionForm />} />
         
 
         {/* shelter routes */}
