@@ -24,6 +24,7 @@ function App() {
         {/* guest routes */}
         <Route path="/" element={<Home/>}/>
         <Route path="/signinform" element={<SignInForm/>}/>
+        <Route path="/signin" element={<Login/>}/>
         <Route path="/shelters" element={<Login/>}/>
         <Route path="/animals/:id" element={<Animal/>} />
         <Route path="/animals" element={<Animals/>} />
