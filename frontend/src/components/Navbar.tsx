@@ -8,7 +8,7 @@ import { Container } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../hooks/useAuth';
 
-const SIGNIN_URL = 'http://localhost:3000/auth/google/signin'
+const SIGNIN_URL = 'http://localhost:5173/signin'
 
 export default function ButtonAppBar() {
     const navigate = useNavigate();
@@ -36,7 +36,7 @@ export default function ButtonAppBar() {
                 <Button color="inherit" onClick={() => navigate('/animals')}>Zwierzęta</Button>
                 <Button color="inherit" onClick={() => navigate('/shelters')}>Schroniska</Button>
                 <Button color="inherit" onClick={() => {navigate('/signup')}}>Zarejestruj się</Button>
-                <Button color="inherit" onClick={handleSignIn}>Zaloguj się</Button>
+                <Button color="inherit" onClick={() => navigate('/signin')}>Zaloguj się</Button>
               </>
             )}
 
