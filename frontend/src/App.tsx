@@ -18,6 +18,7 @@ import SignUpForm from './components/shared/SignUpForm';
 import SignInForm from './components/shared/SignInForm';
 import AdoptionForm from './pages/Adoptions/AdoptionForm';
 import Shelters from './pages/Shelters/Shelters';
+import Shelter from './pages/Shelters/Shelter';
 
 function App() {
   return (
@@ -32,7 +33,8 @@ function App() {
         <Route path="/animals" element={<Animals/>} />
         <Route path="/signupform/:role" element={<SignUpForm/>}/>
 
-        {/* registration routes - tylko podstawowe */}
+        {/* guest and user routes */}
+        <Route path="/shelters/:id" element={<Shelter/>} />
         {/* registration routes */}
         <Route path="/signup" element={<AccountTypeSelector />} />
         <Route path="/signup/:type" element={<RegistrationMethodSelector />} />
