@@ -26,6 +26,11 @@ interface FormData {
   name?: string;
   address?: string;
   description?: string;
+  shelter_id?:number;
+  city?: string,
+  street?: string,
+  postal_code?: string;
+  building?: string;
 }
 
 interface ProfileFormProps {
@@ -147,6 +152,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
                     required
                     sx={{ mb: 3 }}
                   />
+                  <TextField
+                fullWidth
+                label="Telefon"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange('phone')}
+                required
+                sx={{ mb: 3 }}
+              />
                   <FormControl fullWidth sx={{ mb: 3 }}>
                     <InputLabel>Płeć</InputLabel>
                     <Select
@@ -173,9 +187,33 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
                   />
                   <TextField
                     fullWidth
-                    label="Adres"
-                    value={formData.address}
-                    onChange={handleChange('address')}
+                    label="Miasto"
+                    value={formData.city}
+                    onChange={handleChange('city')}
+                    required
+                    sx={{ mb: 3 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Ulica"
+                    value={formData.street}
+                    onChange={handleChange('street')}
+                    required
+                    sx={{ mb: 3 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Kod pocztowy"
+                    value={formData.postal_code}
+                    onChange={handleChange('postal_code')}
+                    required
+                    sx={{ mb: 3 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Numer budynku"
+                    value={formData.building}
+                    onChange={handleChange('building')}
                     required
                     sx={{ mb: 3 }}
                   />
@@ -188,6 +226,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
                     onChange={handleChange('description')}
                     sx={{ mb: 3 }}
                   />
+                  <TextField
+                fullWidth
+                label="Telefon"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange('phone')}
+                required
+                sx={{ mb: 3 }}
+              />
                   <Button
                     component="label"
                     variant="contained"
@@ -205,15 +252,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
                   </Button>
                 </>
               )}
-              <TextField
-                fullWidth
-                label="Telefon"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange('phone')}
-                required
-                sx={{ mb: 3 }}
-              />
+              
               <Button
                 fullWidth
                 type="submit"

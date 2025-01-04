@@ -36,7 +36,7 @@ const createShelterProfile = async (req, res) => {
     console.log('creating shelter profile...');
     console.log(req.body)
     try {
-        const {userId, name, address, description, phone} = req.body;
+        const {userId, name, address, description, phone, city, street, postal_code, building} = req.body;
         console.log(userId)
         const profileExists = await selectShelterProfileById(userId);
         if(profileExists.length != 0) {
@@ -44,7 +44,7 @@ const createShelterProfile = async (req, res) => {
             return res.status(201).json({message: 'Profile already exists'})
         }
         const result = await cloudinary.uploader.upload(req.file.path);
-        const insertedId = await insertShelterProfile(userId, name, address, description, phone)
+        const insertedId = await insertShelterProfile(userId, name, address, description, phone, city, street, postal_code, building)
         const insertedImg = await insertShelterImg(insertedId, result.secure_url)
         console.log(req.body)
         res.status(201).json({message: 'Shelter profile created successfully'})

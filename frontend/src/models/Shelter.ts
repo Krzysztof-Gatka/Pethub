@@ -1,10 +1,13 @@
 export interface ShelterModel {
-    id: number;
+    shelter_id: number;
     name: string;
-    address: string;
     description: string;
     phone: string;
     email: string;
+    city: string;
+    street: string;
+    postal_code: string;
+    building: string
 }
 
 export interface ShelterCardProps extends ShelterModel {

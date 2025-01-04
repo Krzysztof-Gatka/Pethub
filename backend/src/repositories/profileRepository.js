@@ -2,13 +2,16 @@ const { pool } = require('../config/db');
 
 
 
-const insertShelterProfile = async (user_id, name, adress, description, phone_number) => {
+const insertShelterProfile = async (user_id, name, adress, description, phone_number, city, street, postal_code, building) => {
     console.log('insertShelterProfile')
     console.log('address:', adress)
     console.log('phone_number:', phone_number)
-    const query = `INSERT INTO shelter_profiles (shelter_id, name, address, description, phone_number) VALUES (?, ?, ?, ?, ?)`
+    const query = `
+        INSERT INTO shelter_profiles 
+        (shelter_id, name, description, phone_number, city, street, postal_code, building)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     try {
-        const [result] = await pool.query(query, [Number(user_id), name, adress, description, phone_number])
+        const [result] = await pool.query(query, [Number(user_id), name, description, phone_number, city, street, postal_code, building])
         return result.insertId
     } catch(err) {
         console.error('error',err)
