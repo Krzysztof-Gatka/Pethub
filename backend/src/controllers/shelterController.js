@@ -72,14 +72,16 @@ const deleteShelterProfile = async (req, res) => {
 };
 
 const getShelterProfile = async (req, res) => {
+    const {id} = req.query
+
     try {
-        const token = req.cookies['jwt'];
-        const user = jwt.decode(token);
-        const shelter_id = user.userId;
         
         const [rows] = await pool.execute(
-            'SELECT * FROM shelter_profiles WHERE shelter_id = ?',
-            [shelter_id]
+            `SELECT u.email, s.name, s.city, s.street, s.postal_code, s.building, s.description, s.phone_number FROM shelter_profiles s 
+LEFT JOIN users u
+ON s.shelter_id = u.id
+WHERE shelter_id = ?;`,
+            [id]
         );
         
         if (rows.length === 0) {
@@ -95,7 +97,7 @@ const getShelterProfile = async (req, res) => {
 const getShelterProfiles = async (req, res) => {
     try {
         const [rows] = await pool.execute(
-            `SELECT u.email, s.name, s.city, s.street, s.postal_code, s.building, s.description, s.phone_number FROM shelter_profiles s
+            `SELECT s.shelter_id, u.email, s.name, s.city, s.street, s.postal_code, s.building, s.description, s.phone_number FROM shelter_profiles s
             LEFT JOIN users u
             ON s.shelter_id = u.id;`,
         );

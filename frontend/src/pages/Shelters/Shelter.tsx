@@ -17,6 +17,7 @@ import PetsIcon from '@mui/icons-material/Pets';
 import { ShelterModel } from '../../models/Shelter';
 import AnimalCard from '../../components/shared/AnimalCard';
 import { useAuth } from '../../hooks/useAuth';
+import axios from 'axios';
 
 const Shelter = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,20 +27,27 @@ const Shelter = () => {
   const [showAnimals, setShowAnimals] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
 
+  const fetchShelter = async () => {
+    const response = await axios.get(`http://localhost:3000/api/shelter/profile?id=${Number(id)}`)
+    const shelter = response.data
+    console.log(shelter)
+    setShelter(shelter);
+  }
+
   useEffect(() => {
+    fetchShelter();
     // Dane testowe schroniska
-    const testShelter: ShelterModel = {
-      shelter_id: parseInt(id || '1'),
-      name: "Schronisko Na Paluchu",
-      street: "ul. Paluch 2",
-      city: "Warszawa",
-      postal_code: "02-147",
-      building: "",
-      description: "Największe schronisko dla bezdomnych zwierząt w Warszawie",
-      phone: "+48 22 868 15 79",
-      email: "kontakt@napaluchu.waw.pl"
-    };
-    setShelter(testShelter);
+    // const testShelter: ShelterModel = {
+    //   shelter_id: parseInt(id || '1'),
+    //   name: "Schronisko Na Paluchu",
+    //   street: "ul. Paluch 2",
+    //   city: "Warszawa",
+    //   postal_code: "02-147",
+    //   building: "",
+    //   description: "Największe schronisko dla bezdomnych zwierząt w Warszawie",
+    //   phone: "+48 22 868 15 79",
+    //   email: "kontakt@napaluchu.waw.pl"
+    // };
   }, [id]);
 
   // Dane testowe zwierząt
@@ -113,7 +121,7 @@ const Shelter = () => {
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <PhoneIcon sx={{ mr: 2, color: 'primary.main' }} />
-                <Typography>{shelter.phone}</Typography>
+                <Typography>{`${shelter.phone_number.split('').slice(0,3).join('')} ${shelter.phone_number.split('').slice(3,6).join('')} ${shelter.phone_number.split('').slice(6,9).join('')}`}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                 <EmailIcon sx={{ mr: 2, color: 'primary.main' }} />

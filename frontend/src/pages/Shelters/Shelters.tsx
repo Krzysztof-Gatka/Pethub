@@ -25,7 +25,7 @@ const Shelters = () => {
   const fetchShelters = async () => {
     const response = await axios.get('http://localhost:3000/api/shelter/profiles')
     const shelters = response.data;
-
+    console.log(shelters)
     setShelters(shelters)
     setFilteredShelters(shelters)
   }
