@@ -1,7 +1,7 @@
 const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
-const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks, selectAnimalBookedWalks} = require('../repositories/animalRepository')
+const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks, selectAnimalBookedWalks, selectAnimalsByShelterId} = require('../repositories/animalRepository')
 
 const getAnimals = async (req, res) => {
     try {
@@ -10,6 +10,17 @@ const getAnimals = async (req, res) => {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+}
+
+const getAnimalsByShelterId = async (req, res) => {
+  const {id} = req.query 
+  console.log(id)
+  try {
+    const rows = await selectAnimalsByShelterId(id);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
 
 const getAnmlById = async (req, res) => {
@@ -103,5 +114,6 @@ module.exports = {
     getAnimalWalkSlots,
     bookWalk,
     getUserWalks,
-    getAnimalWalks
+    getAnimalWalks,
+    getAnimalsByShelterId
 }

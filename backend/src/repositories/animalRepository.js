@@ -14,6 +14,16 @@ const getAllAnimals = async (email) => {
     }
 };
 
+const selectAnimalsByShelterId = async (shelter_id) => {
+    const query = `SELECT * FROM animals WHERE shelter_id = ?`
+    try {
+        const [rows] = await pool.query(query, [shelter_id])
+        return rows.length > 0 ? rows : [];
+    } catch (err) {
+        console.error('Error selecting animals by given shelter id')
+    }
+}
+
 const getAnimalById = async (id) => {
     const query = `SELECT a.id, a.name, a.age, a.description, a.shelter_id, i.img_url
             FROM animals a
@@ -112,4 +122,5 @@ module.exports = {
     selectUserWalks,
     selectAnimalWalks,
     selectAnimalBookedWalks,
+    selectAnimalsByShelterId,
 }

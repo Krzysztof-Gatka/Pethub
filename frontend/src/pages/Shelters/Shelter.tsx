@@ -27,6 +27,12 @@ const Shelter = () => {
   const [showAnimals, setShowAnimals] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
 
+  const fetchAnimals = async () => {
+    const response = await axios.get(`http://localhost:3000/api/animals/shelter?id=${Number(id)}`)
+    const animals = response.data
+    setAnimals(animals)
+  }
+
   const fetchShelter = async () => {
     const response = await axios.get(`http://localhost:3000/api/shelter/profile?id=${Number(id)}`)
     const shelter = response.data
@@ -36,6 +42,7 @@ const Shelter = () => {
 
   useEffect(() => {
     fetchShelter();
+    fetchAnimals();
     // Dane testowe schroniska
     // const testShelter: ShelterModel = {
     //   shelter_id: parseInt(id || '1'),
@@ -80,7 +87,8 @@ const Shelter = () => {
 
   const handleShowAnimals = () => {
     if (!showAnimals) {
-      setAnimals(mockAnimals);
+      // fetchAnimals();
+      // setAnimals(mockAnimals);
     }
     setShowAnimals(!showAnimals);
   };
