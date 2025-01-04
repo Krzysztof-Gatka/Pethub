@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
   Container,
@@ -33,6 +33,7 @@ const Animal = () => {
   const [walks, setWalks] = useState<Walk[]>([]);
   const [isFollowed, setIsFollowed] = useState(false);
   const [openScheduler, setOpenScheduler] = useState(false);
+  const navigate = useNavigate()
 
   const handleWalk = () => {
     setOpenScheduler(!openScheduler);
@@ -79,8 +80,10 @@ const Animal = () => {
     }
   };
 
+
   const handleAdopt = () => {
     console.log('handling adopt button');
+    navigate(`/adopt/${id}`);
   };
 
   useEffect(() => {

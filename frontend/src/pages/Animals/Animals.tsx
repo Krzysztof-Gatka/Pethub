@@ -138,7 +138,7 @@ const Animals = () => {
                   >
                     Szczegóły
                   </Button>
-                  <Button 
+                  {/* <Button 
                     size="small" 
                     variant="contained" 
                     color="primary" 
@@ -146,7 +146,7 @@ const Animals = () => {
                     onClick={() => handleAdopt(animal.id)}
                   >
                     Adoptuj
-                  </Button>
+                  </Button> */}
                 </Box>
               </Card>
             </Grid>
