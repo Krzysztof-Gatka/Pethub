@@ -15,6 +15,8 @@ cloudinary.config({
 const createUserProfile = async (req, res) => {
     try {
         const {userId, age, firstName, gender, lastName, phone} = req.body;
+        console.log('successfully retracted data from request body')
+        console.log(req.body)
         const profileExists = await selectUserProfileById(userId);
         if(profileExists.length != 0) {
             console.log('profile already exists')
@@ -22,11 +24,11 @@ const createUserProfile = async (req, res) => {
         } 
 
         console.log('creating user profile...');
-        const [result] = await insertUserProfile(userId, firstName, lastName, age, gender, phone)
+        const result = await insertUserProfile(Number(userId), firstName, lastName, Number(age), gender, phone)
 
         res.status(201).json({message: 'Sucessfully created profile'})
     } catch (err) {
-        res.status(500).json({error: err.message});
+        res.status(500).json({error: err.message, msg:'testing'});
     }
 }
 

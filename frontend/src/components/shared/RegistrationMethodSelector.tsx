@@ -19,7 +19,7 @@ const RegistrationMethodSelector: React.FC = () => {
   const title = isUser ? 'użytkownika' : 'schroniska';
 
   const handleStandardRegistration = () => {
-    navigate(`/signup/${type}/email`);
+    navigate(`/signupform/${isUser ? 'user' : 'shelter'}`);
   };
 
   const handleGoogleRegistration = () => {

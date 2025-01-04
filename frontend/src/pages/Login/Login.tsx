@@ -1,28 +1,28 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 
-const USER_LOGIN_URL = 'http://localhost:3000/auth/google/signup?role=user'
-const SHELTER_LOGIN_URL = 'http://localhost:3000/auth/google/signup?role=shelter'
-
-const handleUserLogin = () => {
-  window.location.href = (USER_LOGIN_URL);
-}
-
-const handleShelterLogin = () => {
-  window.location.href = (SHELTER_LOGIN_URL)
-}
-
+const GOOGLE_LOGIN_URL = 'http://localhost:3000/auth/google/signin'
 
 
 const Login = () => {
+
+  const navigate = useNavigate();
+
+  const handleEmailSignIn = () => {
+    navigate('/signinform')
+  }
+  
+  const handleGoogleSignIn = () => {
+    window.location.href = (GOOGLE_LOGIN_URL)
+  }
+
+
   return (
     <>
-        <div>
-          Welcome to Sign Up page
-        </div>
-        <button onClick={() => handleUserLogin()}>Create User acoount</button>
+        <button onClick={handleEmailSignIn}>Zaloguje się emailem oraz hasłem</button>
         <br></br>
-        <button onClick={() => handleShelterLogin()}>Create shelter account</button>
+        <button onClick={handleGoogleSignIn}>Zaloguj się kontem Google</button>
     </>
   )
 }

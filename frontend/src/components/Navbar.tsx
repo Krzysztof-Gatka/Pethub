@@ -37,7 +37,7 @@ export default function ButtonAppBar() {
   }, [isLoggedIn]);
 
   const handleSignIn = () => {
-    window.location.href = (SIGNIN_URL);
+    navigate('/signin')
   };
 
   const handleLogout = async () => {

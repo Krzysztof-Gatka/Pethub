@@ -4,6 +4,7 @@ const mysql = require('mysql2/promise');
 const {pool} = require('../config/db')
 const {verifyGoogleToken, generateToken} = require('../utils/jwtUtils');
 const { insertUser, getUserIdByEmail, getUserRoleByEmail } = require('../repositories/userRepository');
+const { insertEmailUser, selectUserPassword } = require('../repositories/authRepository');
 
 
 
@@ -183,6 +184,66 @@ const setUserData = (req, res) => {
 
   }
 
+  const emailSignUp = async (req, res) => {
+    const { role } = req.query
+    const { email, password } = req.body
+    const user = {
+      userId: -1,
+      role,
+      email,
+    }
+    
+    try {
+      const userId = await insertEmailUser(email, password, role)
+      user.userId = userId
+      const jwt_token = generateToken(user)
+
+      res.cookie('jwt', jwt_token, {
+        httpOnly: true,       // Prevents client-side JavaScript access
+        sameSite: 'Strict',   // CSRF protection
+        maxAge: 3600000,      // 1 hour
+      });
+      res.status(201).json({userId})
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const emailSignIn = async (req, res) => {
+
+    try {
+      const {email, password} = req.body
+      const {id, password_hash, role} = await selectUserPassword(email)
+      console.log(id, password, password_hash, role)
+      if(id == -1) {
+        return res.status(401).json({message: 'user does not exists'})
+      }
+
+      if (password != password_hash) {
+        return res.status(401).json({message: 'invalid password'})
+      }
+
+      const user = {
+        email,
+        userId: id,
+        role
+      }
+
+      const jwt_token = generateToken(user)
+      res.cookie('jwt', jwt_token, {
+        httpOnly: true,       // Prevents client-side JavaScript access
+        sameSite: 'Strict',   // CSRF protection
+        maxAge: 3600000,      // 1 hour
+      });
+      res.status(201).json({user})
+
+
+    } catch (err) {
+      console.log(err)
+    }
+    
+  }
+
 
   module.exports = {
     googleSignUp,
@@ -192,4 +253,6 @@ const setUserData = (req, res) => {
     setUserData,
     getUserSession,
     logout,
+    emailSignUp,
+    emailSignIn
   }
