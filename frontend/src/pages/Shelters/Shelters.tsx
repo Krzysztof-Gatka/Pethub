@@ -23,34 +23,44 @@ const Shelters = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const initialShelters = [
+    // Przykładowe dane do testowania interfejsu
+    const testShelters: ShelterModel[] = [
       {
-        id: 1,
+        shelter_id: 1,
         name: "Schronisko Na Paluchu",
-        address: "ul. Paluch 2, 02-147 Warszawa",
+        street: "ul. Paluch 2",
+        city: "Warszawa",
+        postal_code: "02-147",
+        building: "",
         description: "Największe schronisko dla bezdomnych zwierząt w Warszawie",
         phone: "+48 22 868 15 79",
         email: "kontakt@napaluchu.waw.pl"
       },
       {
-        id: 2,
+        shelter_id: 2,
         name: "Schronisko w Korabiewicach",
-        address: "Korabiewice 11, 96-330 Puszcza Mariańska",
+        street: "Korabiewice",
+        building: "11",
+        city: "Puszcza Mariańska",
+        postal_code: "96-330",
         description: "Schronisko prowadzone przez Fundację Viva",
         phone: "+48 725 850 950",
         email: "korabiewice@viva.org.pl"
       },
       {
-        id: 3,
+        shelter_id: 3,
         name: "Schronisko w Celestynowie",
-        address: "ul. Prosta 3, 05-430 Celestynów",
+        street: "ul. Prosta",
+        building: "3",
+        city: "Celestynów",
+        postal_code: "05-430",
         description: "Schronisko dla bezdomnych zwierząt",
         phone: "+48 22 789 70 61",
         email: "kontakt@celestynow.org.pl"
       }
     ];
-    setShelters(initialShelters);
-    setFilteredShelters(initialShelters);
+    setShelters(testShelters);
+    setFilteredShelters(testShelters);
   }, []);
 
   const handleFilterChange = (filters: ShelterFilters) => {
@@ -58,7 +68,7 @@ const Shelters = () => {
       if (filters.searchTerm && !shelter.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
         return false;
       }
-      if (filters.city && !shelter.address.toLowerCase().includes(filters.city.toLowerCase())) {
+      if (filters.city && !shelter.city.toLowerCase().includes(filters.city.toLowerCase())) {
         return false;
       }
       return true;
@@ -84,9 +94,7 @@ const Shelters = () => {
   const startIndex = (page - 1) * itemsPerPage;
   const currentShelters = filteredShelters.slice(startIndex, startIndex + itemsPerPage);
 
-  const cities = [...new Set(shelters.map(shelter => 
-    shelter.address.split(',')[1]?.trim() || shelter.address
-  ))];
+  const cities = [...new Set(shelters.map(shelter => shelter.city))];
 
   return (
     <>
@@ -111,7 +119,7 @@ const Shelters = () => {
 
         <Grid container spacing={3}>
           {currentShelters.map((shelter) => (
-            <Grid item xs={12} sm={6} md={4} key={shelter.id}>
+            <Grid item xs={12} sm={6} md={4} key={shelter.shelter_id}>
               <ShelterCard 
                 {...shelter}
                 isLoggedIn={isLoggedIn}
