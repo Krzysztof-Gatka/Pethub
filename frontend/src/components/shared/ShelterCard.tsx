@@ -7,9 +7,12 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 
 const ShelterCard: React.FC<ShelterCardProps> = ({
-  id,
+  shelter_id,  // zmiana z id na shelter_id
   name,
-  address,
+  street,     // zmiana z address
+  city,
+  postal_code,
+  building,
   description,
   phone,
   email,
@@ -20,7 +23,7 @@ const ShelterCard: React.FC<ShelterCardProps> = ({
   const navigate = useNavigate();
 
   const handleDetails = () => {
-    navigate(`/shelters/${id}`);
+    navigate(`/shelters/${shelter_id}`);
   };
 
   return (
@@ -40,7 +43,7 @@ const ShelterCard: React.FC<ShelterCardProps> = ({
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <LocationOnIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
           <Typography variant="body2" color="text.secondary">
-            {address}
+            {`${street} ${building}, ${postal_code} ${city}`}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -73,7 +76,7 @@ const ShelterCard: React.FC<ShelterCardProps> = ({
             variant={isFollowed ? "contained" : "outlined"}
             color="primary" 
             fullWidth
-            onClick={() => onFollow && onFollow(id)}
+            onClick={() => onFollow && onFollow(shelter_id)}
           >
             {isFollowed ? 'OBSERWUJESZ' : 'OBSERWUJ'}
           </Button>

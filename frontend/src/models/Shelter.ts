@@ -7,7 +7,7 @@ export interface ShelterModel {
     city: string;
     street: string;
     postal_code: string;
-    building: string
+    building: string;
 }
 
 export interface ShelterCardProps extends ShelterModel {
