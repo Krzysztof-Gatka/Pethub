@@ -1,8 +1,11 @@
 const express = require('express');
-const { googleSignUp, googleSignUpCallback, setUserData, getUserSession, logout, googleSignIn, googleSignInCallback } = require('../controllers/authController');
+const { googleSignUp, googleSignUpCallback, setUserData, getUserSession, logout, googleSignIn, googleSignInCallback, emailSignUp, emailSignIn } = require('../controllers/authController');
 const { jwtAuth } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
+
+router.post('/signup', emailSignUp)
+router.post('/signin', emailSignIn)
 
 router.get('/google/signup', googleSignUp)
 router.get('/google/signup/callback', googleSignUpCallback)

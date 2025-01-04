@@ -56,11 +56,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
 
   const handleUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    formData.userId = user?.userId;
+    formData.userId = searchParams.get('userId');
     console.log(formData)
     try {
+      console.log('sending create profile request')
       const response = await axios.post(`http://localhost:3000/api/profiles/user/create`, formData);
       console.log(response.data)
+      navigate('/')
     } catch(error) {
       console.log('Błąd podczas zapisywania profilu')
     }

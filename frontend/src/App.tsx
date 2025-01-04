@@ -14,6 +14,8 @@ import Followed from './pages/Followed/Followed'
 import { UserProfileForm, ShelterProfileForm } from './components/shared/ProfileForm';
 import Walks from './pages/Walks/Walks'
 import NotificationList from './pages/Notifications/NotificationList'
+import SignUpForm from './components/shared/SignUpForm';
+import SignInForm from './components/shared/SignInForm';
 
 function App() {
   return (
@@ -21,10 +23,11 @@ function App() {
       <Routes>
         {/* guest routes */}
         <Route path="/" element={<Home/>}/>
-        <Route path="/login" element={<Login/>}/>
+        <Route path="/signinform" element={<SignInForm/>}/>
         <Route path="/shelters" element={<Login/>}/>
         <Route path="/animals/:id" element={<Animal/>} />
         <Route path="/animals" element={<Animals/>} />
+        <Route path="/signupform/:role" element={<SignUpForm/>}/>
 
         {/* registration routes - tylko podstawowe */}
         {/* registration routes */}
