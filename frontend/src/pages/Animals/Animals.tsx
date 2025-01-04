@@ -14,12 +14,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import ShelterLayout from '../../layouts/ShelterLayout';
 import PetsIcon from '@mui/icons-material/Pets';
-
-
-
+import AnimalSearchFilters from '../../components/shared/AnimalSearchFilters';
+import { AnimalFilters } from '../../models/Filters';
 
 const Animals = () => {
   const [animals, setAnimals] = useState([]);
+  const [filteredAnimals, setFilteredAnimals] = useState([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
   const navigate = useNavigate();
@@ -28,7 +28,9 @@ const Animals = () => {
     const fetchAnimals = async () => {
       try {
         const response = await axios.get('http://localhost:3000/api/animals');
-        setAnimals(response.data);
+        const fetchedAnimals = response.data;
+        setAnimals(fetchedAnimals);
+        setFilteredAnimals(fetchedAnimals);
       } catch (err) {
         console.error('Błąd podczas pobierania danych:', err);
       }
@@ -37,9 +39,32 @@ const Animals = () => {
     fetchAnimals();
   }, []);
 
-  const totalPages = Math.ceil(animals.length / itemsPerPage);
+  const handleFilterChange = (filters: AnimalFilters) => {
+    let filtered = animals.filter((animal) => {
+      if (filters.searchTerm && !animal.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+        return false;
+      }
+      if (filters.category && animal.category !== filters.category) {
+        return false;
+      }
+      if (filters.species && animal.species !== filters.species) {
+        return false;
+      }
+      if (filters.shelter && animal.shelter_id !== filters.shelter) {
+        return false;
+      }
+      const age = parseInt(animal.age);
+      if (filters.ageRange && (age < filters.ageRange[0] || age > filters.ageRange[1])) {
+        return false;
+      }
+      return true;
+    });
+    setFilteredAnimals(filtered);
+  };
+
+  const totalPages = Math.ceil(filteredAnimals.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
-  const currentAnimals = animals.slice(startIndex, startIndex + itemsPerPage);
+  const currentAnimals = filteredAnimals.slice(startIndex, startIndex + itemsPerPage);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -49,6 +74,7 @@ const Animals = () => {
   const handleAnimalDetails = (animalId) => {
     navigate(`/animals/${animalId}`);
   };
+
   const handleAdopt = (animalId) => {
     navigate(`/adopt/${animalId}`);
   };
@@ -67,6 +93,11 @@ const Animals = () => {
           <PetsIcon fontSize="large" />
           Dostępne Zwierzęta
         </Typography>
+
+        <AnimalSearchFilters 
+          onFilterChange={handleFilterChange} 
+          shelters={[]} // Tu należy dodać listę schronisk
+        />
 
         <Grid container spacing={3}>
           {currentAnimals.map((animal) => (

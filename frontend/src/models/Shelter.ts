@@ -5,5 +5,10 @@ export interface ShelterModel {
     description: string;
     phone: string;
     email: string;
-    img_url?: string;
+}
+
+export interface ShelterCardProps extends ShelterModel {
+    isLoggedIn?: boolean;
+    isFollowed?: boolean;
+    onFollow?: (id: number) => void;
 }
