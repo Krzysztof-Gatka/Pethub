@@ -149,3 +149,67 @@ VALUES
 
 
 
+-- VIEWS
+
+-- zwierzęta 
+
+-- dane zwierząt plus url zdjęcia 
+CREATE VIEW animal_profiles_view AS
+SELECT a.id AS animal_id, a.name, a.age, a.description, a.shelter_id, i.img_url
+FROM animals a
+LEFT JOIN  images i 
+ON a.id = i.owner_id;
+-- SELECT * FROM animal_profiles_view;
+
+-- schroniska
+
+-- dane schroniska plus email 
+CREATE VIEW shelter_profiles_view AS
+SELECT u.email, s.name, s.city, s.street, s.postal_code, s.building, s.description, s.phone_number FROM shelter_profiles s
+LEFT JOIN users u
+ON s.shelter_id = u.id;
+SELECT * FROM shelter_profiles_view;
+-- SELECT * FROM animal_profiles_view WHERE shelter_id = 1;
+
+-- spacery 
+
+-- spacery danego użytkownika
+-- SELECT * FROM walks WHERE user_id = 4;
+-- spacery danego zwierzęcia 
+-- SELECT * FROM walks WHERE animal_id = 11;
+-- lista spacerów danego użytkownika
+SELECT * FROM animal_profiles_view a
+LEFT JOIN walks w
+ON a.animal_id = w.animal_id
+WHERE w.user_id = 4;
+-- spacery w danym schronisku 
+CREATE VIEW shelter_walks_view AS
+SELECT w.animal_id, a.shelter_id, w.user_id, w.date, w.time_slot
+FROM walks w
+LEFT JOIN animals a 
+ON w.animal_id = a.id; 
+-- SELECT * FROM shelter_walks_view WHERE shelter_id = 1;
+-- lista spacerów danego schroniska
+SELECT * FROM shelter_walks_view w 
+LEFT JOIN animal_profiles_view a
+ON a.animal_id = w.animal_id
+WHERE w.shelter_id = 1;
+
+-- powiadomienia
+
+-- powiadomiwenia danego użytkownika
+-- SELECT * FROM notifications WHERE owner_id = 1; 
+
+-- obserwacje zwierząt
+
+-- profile zwierząt wraz z obserwatorami
+CREATE VIEW animal_profiles_follows_view AS
+SELECT a.id AS animal_id, a.name, a.age, a.description, a.shelter_id, i.img_url, fa.follower_id
+FROM animals a
+LEFT JOIN  images i 
+ON a.id = i.owner_id
+RIGHT JOIN follows_animals fa
+ON fa.animal_id = a.id;
+SELECT * FROM animal_profiles_follows_view;
+-- profile obserwowanych zwierzat danego użytkownika
+-- SELECT * FROM animal_profiles_follows_view WHERE follower_id = 5;

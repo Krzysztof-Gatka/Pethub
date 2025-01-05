@@ -48,7 +48,6 @@ export default function ButtonAppBar() {
                   <Button color="inherit" onClick={() => navigate('/followed')}>Obserwowane</Button>
                   <Button color="inherit" onClick={() => navigate('/walks')}>Spacery</Button>
                   <Button color="inherit" onClick={() => navigate('/notifications')}>Powiadomienia</Button>
-                  <Button color="inherit" onClick={() => navigate('/appointments')}>Spotkania</Button>
                   <Button color="inherit" onClick={() => navigate('/adoptions')}>Moje Adopcje</Button>
                   <Button color="inherit" onClick={handleLogout}>Wyloguj</Button>
                 </>
@@ -58,10 +57,11 @@ export default function ButtonAppBar() {
             {
               user! && user.role === 'shelter' && (
                 <>
-                  <Button color="inherit" onClick={() => navigate('/animals')}>Zwierzęta</Button>
-                  <Button color="inherit" onClick={() => navigate('/notifications')}>Powiadomienia</Button>
-                  <Button color="inherit" onClick={() => navigate('/appointments')}>Spotkania</Button>
-                  <Button color="inherit" onClick={() => navigate('/adoptions')}>Adopcje</Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/animals')}>Zwierzęta</Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/notifications')}>Powiadomienia</Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/walks')}>Spacery</Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/adoptions')}>Adopcje</Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/profile')}>Adopcje</Button>
                   <Button color="inherit" onClick={handleLogout}>Wyloguj</Button>
                 </>
               )

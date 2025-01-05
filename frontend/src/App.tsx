@@ -19,6 +19,8 @@ import SignInForm from './components/shared/SignInForm';
 import AdoptionForm from './pages/Adoptions/AdoptionForm';
 import Shelters from './pages/Shelters/Shelters';
 import Shelter from './pages/Shelters/Shelter';
+import ShelterAnimals from './pages/Animals/ShelterAnimals';
+import ShelterAnimal from './pages/Animals/ShelterAnimal';
 
 function App() {
   return (
@@ -54,7 +56,8 @@ function App() {
         
 
         {/* shelter routes */}
-        <Route path="/shelter/animals" element={<Animals/>} />
+        <Route path="/shelter/animals" element={<ShelterAnimals/>} />
+        <Route path="/shelter/animals/:id" element={<ShelterAnimal/>} />
         <Route path="/shelter/animals/add" element={<AnimalAdd/>} />
         <Route path="/shelter/animals/:id/edit" element={<Animals/>} />
         <Route path="/shelter/animals/:id/delete" element={<Animals/>} />

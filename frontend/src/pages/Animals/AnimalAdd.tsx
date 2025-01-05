@@ -8,13 +8,16 @@ import {
     Grid,
     Paper,
 } from '@mui/material';
+import ShelterLayout from '../../layouts/ShelterLayout';
+import { useAuth } from '../../hooks/useAuth';
 
 const AnimalAdd: React.FC = () => {
+    const {user} = useAuth()
     const [form, setForm] = useState({
         name: '',
         age: '',
         description: '',
-        shelter_id: '',
+        shelter_id: user?.userId,
     });
     const [image, setImage] = useState<File | null>(null);
 
@@ -48,9 +51,10 @@ const AnimalAdd: React.FC = () => {
     };
 
     return (
+        <ShelterLayout>
         <Paper elevation={3} sx={{ padding: 4, maxWidth: 600, margin: 'auto', mt: 4 }}>
             <Typography variant="h4" gutterBottom>
-                Create Animal Profile
+                Stwórz nowy profil
             </Typography>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
@@ -58,7 +62,7 @@ const AnimalAdd: React.FC = () => {
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
-                            label="Name"
+                            label="Imię"
                             name="name"
                             value={form.name}
                             onChange={handleChange}
@@ -71,7 +75,7 @@ const AnimalAdd: React.FC = () => {
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
-                            label="Age"
+                            label="Wiek"
                             name="age"
                             value={form.age}
                             onChange={handleChange}
@@ -85,7 +89,7 @@ const AnimalAdd: React.FC = () => {
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
-                            label="Description"
+                            label="Opis"
                             name="description"
                             value={form.description}
                             onChange={handleChange}
@@ -97,22 +101,12 @@ const AnimalAdd: React.FC = () => {
                     </Grid>
 
                     {/* Shelter ID Field */}
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Shelter ID"
-                            name="shelter_id"
-                            value={form.shelter_id}
-                            onChange={handleChange}
-                            variant="outlined"
-                            required
-                        />
-                    </Grid>
+                    
 
                     {/* Image Upload Field */}
                     <Grid item xs={12}>
                         <Button variant="contained" component="label" fullWidth>
-                            Upload Image
+                            Wgraj zdjęcie
                             <input
                                 type="file"
                                 hidden
@@ -135,12 +129,13 @@ const AnimalAdd: React.FC = () => {
                             fullWidth
                             size="large"
                         >
-                            Submit
+                            Dodaj profil
                         </Button>
                     </Grid>
                 </Grid>
             </form>
         </Paper>
+        </ShelterLayout>
     );
 };
 

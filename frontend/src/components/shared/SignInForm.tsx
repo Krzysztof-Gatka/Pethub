@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../hooks/useAuth';
 
 
 interface FormData {
@@ -18,6 +19,7 @@ interface FormData {
 const API_URL = 'http://localhost:3000'
 
 const SignInForm = () => {
+
     const [formData, setFormData] = useState<FormData>({
         email:'',
         password:''
@@ -30,13 +32,17 @@ const SignInForm = () => {
         try {
             const response = await axios.post(
                 `${API_URL}/auth/signin`,
-                formData,
+                formData,{withCredentials: true}
             )
             console.log(response)
-            navigate('/')
+
+            window.location.href='http://localhost:5173'
+
 
         } catch (err) {
+            setFormData({...formData, password:''})
             console.log(err)
+            alert('Wprowadzono nieprawidłowe hasło')
         }
         
     }
@@ -77,6 +83,7 @@ const SignInForm = () => {
                             variant="outlined"
                             type="password"
                             required
+ 
                         />
                     </Grid>
 

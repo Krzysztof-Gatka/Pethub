@@ -15,7 +15,7 @@ const getAllAnimals = async (email) => {
 };
 
 const selectAnimalsByShelterId = async (shelter_id) => {
-    const query = `SELECT * FROM animals WHERE shelter_id = ?`
+    const query = `SELECT * FROM animal_profiles_view WHERE shelter_id = ?`
     try {
         const [rows] = await pool.query(query, [shelter_id])
         return rows.length > 0 ? rows : [];
