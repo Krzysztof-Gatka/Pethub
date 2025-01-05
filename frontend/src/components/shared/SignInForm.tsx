@@ -19,7 +19,6 @@ interface FormData {
 const API_URL = 'http://localhost:3000'
 
 const SignInForm = () => {
-    const {user} = useAuth();
 
     const [formData, setFormData] = useState<FormData>({
         email:'',
@@ -37,10 +36,13 @@ const SignInForm = () => {
             )
             console.log(response)
 
-            navigate('/')
+            window.location.href='http://localhost:5173'
+
 
         } catch (err) {
+            setFormData({...formData, password:''})
             console.log(err)
+            alert('Wprowadzono nieprawidłowe hasło')
         }
         
     }
@@ -81,6 +83,7 @@ const SignInForm = () => {
                             variant="outlined"
                             type="password"
                             required
+ 
                         />
                     </Grid>
 

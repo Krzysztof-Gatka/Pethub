@@ -5,9 +5,10 @@ import WalkCard from '../../components/shared/WalkCard';
 import ShelterLayout from '../../layouts/ShelterLayout';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 
+
 interface Walk {
- walk_id:number;
  id: number;
+ walk_id:number;
  name: string; 
  shelterName: string;
  time_slot: number;
