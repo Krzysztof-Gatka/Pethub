@@ -2,6 +2,8 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
 const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks, selectAnimalBookedWalks, selectAnimalsByShelterId} = require('../repositories/animalRepository')
+const { addNotification } = require('./notificationController');
+
 
 const getAnimals = async (req, res) => {
     try {
@@ -43,25 +45,20 @@ cloudinary.config({
 });
 
 const addAnimal = async (req, res) => {
-  console.log('test')
-  console.log(req.body)
   try {
-    const {name, age, description, shelter_id } = req.body;
+      const { name, birth_date, description, type, breed, shelter_id } = req.body;
+      const date_joined = new Date().toISOString().split('T')[0]; // Automatyczna data dołączenia
+      const imageUrl = req.file ? req.file.path : null; // Jeśli obraz jest przesyłany
 
-    console.log(name)
-    console.log(req.file.path)
-    const result = await cloudinary.uploader.upload(req.file.path);
-    console.log(result)
-    const insertedId = await insertAnimalData(name, age, description, shelter_id); 
-    console.log('test1')
-    const insertedImg = await insertImg(insertedId, result.secure_url)
-    console.log('test2')
-
-    res.status(201).json({message: 'Animal profile created succesfully'});
+      // Wstaw dane do bazy danych
+      await insertAnimalData(name, birth_date, description, type, breed, shelter_id, date_joined, imageUrl);
+      res.status(201).json({ message: 'Animal added successfully' });
   } catch (err) {
-    res.status(500).json({error: err.message});
+      console.error('Error inserting animal', err);
+      res.status(500).json({ error: err.message });
   }
-}
+};
+
 
 const getAnimalWalks = async (req, res) => {
   const { animalId, date } = req.query;
@@ -85,16 +82,24 @@ const getAnimalWalkSlots = async (req, res) => {
 }
 
 const bookWalk = async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   const { animalId, userId, date, timeSlot } = req.body;
   try {
-    const result = insertBookedSlot(animalId, userId, date, timeSlot)
+    const result = await insertBookedSlot(animalId, userId, date, timeSlot);
+
+    // Dodaj powiadomienie
+    await addNotification(
+      userId,
+      'new_walk',
+      `Zaplanowano spacer z zwierzęciem o ID ${animalId} na ${date} o godzinie ${timeSlot}:00.`
+    );
+
     res.status(201).json({ message: 'Walk successfully booked.' });
   } catch (error) {
-      res.status(500).json({ error: 'Error booking the walk.' });
+    console.error('Error booking walk:', error.message);
+    res.status(500).json({ error: 'Error booking the walk.' });
   }
-
-}
+};
 
 const getUserWalks = async (req, res) => {
   const { userId } = req.query;

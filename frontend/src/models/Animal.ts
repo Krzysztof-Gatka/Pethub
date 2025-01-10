@@ -1,7 +1,11 @@
-export interface Animal {
-    id: number,
-    name: string,
-    birth_year: number,
-    description: string,
-    shelter_id: number,
-}
+export interface AnimalModel {
+    id: number;
+    name: string;
+    age: number;
+    breed: string;
+    date_joined: string;
+    shelter_name: string;
+    description: string;
+    img_url: string;
+  }
+  

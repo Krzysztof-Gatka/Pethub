@@ -28,6 +28,7 @@ const FOLLOW_API_URL = 'http://localhost:3000/api/follows/animal';
 
 const Animal = () => {
   const { id } = useParams();
+  console.log('ID z URL:', id); // Dodaj log, aby sprawdzić wartość
   const [animal, setAnimal] = useState<AnimalModel | null>(null);
   const { user, isLoggedIn } = useAuth();
   const [walks, setWalks] = useState<Walk[]>([]);
@@ -132,65 +133,72 @@ const Animal = () => {
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Paper elevation={3} sx={{ p: 3 }}>
-              <Typography variant="h4" gutterBottom>
-                {animal.name}
-              </Typography>
+          <Paper elevation={3} sx={{ p: 3 }}>
+  <Typography variant="h4" gutterBottom>
+    {animal.name}
+  </Typography>
 
-              <Box sx={{ my: 2 }}>
-                <Chip label={`Wiek: ${animal.age} lat`} sx={{ mr: 1, mb: 1 }} />
-              </Box>
+  <Box sx={{ my: 2 }}>
+    <Chip label={`Wiek: ${animal.age} lat`} sx={{ mr: 1, mb: 1 }} />
+    <Chip label={`Rasa: ${animal.breed}`} sx={{ mr: 1, mb: 1 }} />
+    <Chip label={`Schronisko: ${animal.shelter_name}`} sx={{ mr: 1, mb: 1 }} />
+    <Chip label={`W schronisku od: ${animal.date_joined}`} sx={{ mr: 1, mb: 1 }} />
+  </Box>
 
-              <Typography variant="body1" paragraph>
-                {animal.description}
-              </Typography>
+  <Typography variant="body1" paragraph>
+    {animal.description}
+  </Typography>
 
-              <Divider sx={{ my: 2 }} />
+  <Divider sx={{ my: 2 }} />
 
-              <Box sx={{ mt: 3, display: 'flex', gap: 2, flexDirection: 'column' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  startIcon={<PetsIcon />}
-                  size="large"
-                  onClick={handleAdopt}
-                  disabled={!isLoggedIn}
-                >
-                  Adoptuj
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  fullWidth
-                  startIcon={<DirectionsWalkIcon />}
-                  size="large"
-                  onClick={handleWalk}
-                  disabled={!isLoggedIn}
-                >
-                  Umów spacer
-                </Button>
-                <Button
-                  variant="outlined" // Używamy obrysu
-                  fullWidth
-                  startIcon={<FavoriteIcon />}
-                  size="large"
-                  onClick={handleFollow}
-                  disabled={!isLoggedIn}
-                  sx={{
-                    color: isFollowed ? '#9c27b0' : 'primary.main', // Zmieniamy kolor tekstu
-                    borderColor: isFollowed ? '#9c27b0' : 'primary.main', // Zmieniamy kolor obrysu
-                    '&:hover': {
-                      borderColor: isFollowed ? '#7b1fa2' : 'primary.dark', // Zmieniamy kolor obrysu na hover
-                      color: isFollowed ? '#7b1fa2' : 'primary.dark', // Zmieniamy kolor tekstu na hover
-                    },
-                  }}
-                >
-                  {isFollowed ? 'Przestań obserwować' : 'Obserwuj'}
-                </Button>
+  <Box sx={{ mt: 3, display: 'flex', gap: 2, flexDirection: 'column' }}>
+    {isLoggedIn && (
+      <>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          startIcon={<PetsIcon />}
+          size="large"
+          onClick={handleAdopt}
+        >
+          Adoptuj
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          fullWidth
+          startIcon={<DirectionsWalkIcon />}
+          size="large"
+          onClick={handleWalk}
+        >
+          Umów spacer
+        </Button>
+        <Button
+          variant="outlined"
+          fullWidth
+          startIcon={<FavoriteIcon />}
+          size="large"
+          onClick={handleFollow}
+          sx={{
+            color: isFollowed ? '#9c27b0' : 'primary.main',
+            borderColor: isFollowed ? '#9c27b0' : 'primary.main',
+            '&:hover': {
+              borderColor: isFollowed ? '#7b1fa2' : 'primary.dark',
+              color: isFollowed ? '#7b1fa2' : 'primary.dark',
+            },
+          }}
+        >
+          {isFollowed ? 'Przestań obserwować' : 'Obserwuj'}
+        </Button>
+      </>
+    )}
+  </Box>
+</Paper>
 
-              </Box>
-            </Paper>
+
+
+            
           </Grid>
         </Grid>
       </Container>

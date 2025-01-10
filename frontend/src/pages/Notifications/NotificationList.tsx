@@ -13,7 +13,9 @@ import {
   List,
   ListItem,
   ListItemText,
+  Box,
 } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import ShelterLayout from '../../layouts/ShelterLayout';
 
 interface Notification {
@@ -32,22 +34,13 @@ const NotificationList: React.FC = () => {
       const response = await axios.get(
         `http://localhost:3000/api/notifications?userId=${user?.userId}`
       );
+      console.log('Fetched notifications:', response.data);
       setNotifications(response.data);
     } catch (err) {
       console.error('Error fetching notifications:', err);
     }
   };
-
-  const handleTestNotification = async () => {
-    try {
-      await axios.get(
-        `http://localhost:3000/api/notifications/test-notifications?userId=${user?.userId}`
-      );
-      fetchNotifications();
-    } catch (err) {
-      console.error('Error triggering test notification:', err);
-    }
-  };
+  
 
   const handleNotificationClick = (notification: Notification) => {
     setSelectedNotification(notification);
@@ -75,30 +68,55 @@ const NotificationList: React.FC = () => {
     }
   }, [user]);
 
+  // Styl obramowania w zależności od typu powiadomienia
+  const getNotificationStyle = (type: string) => {
+    switch (type) {
+      case 'adoption_approved':
+        return { border: '2px solid green', backgroundColor: '#e8f5e9' };
+      case 'walk_cancelled':
+      case 'adoption_cancelled':
+        return { border: '2px solid red', backgroundColor: '#ffebee' };
+      default:
+        return { border: '2px solid blue', backgroundColor: '#e3f2fd' };
+    }
+  };
+
   return (
     <ShelterLayout>
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Powiadomienia
-        </Typography>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          gap={2}
+          sx={{ mb: 4 }}
+        >
+          <NotificationsIcon fontSize="large" />
+          <Typography variant="h4" gutterBottom>
+            Powiadomienia
+          </Typography>
+        </Box>
 
-  
         {/* Lista powiadomień */}
-        <List sx={{ mt: 3 }}>
+        <List>
           {notifications.map((notification) => (
             <ListItem
               key={notification.id}
               button
               onClick={() => handleNotificationClick(notification)}
               sx={{
-                border: '1px solid #ccc',
-                borderRadius: '4px',
+                borderRadius: '8px',
                 marginBottom: '8px',
-                backgroundColor: '#f9f9f9',
+                padding: '16px',
+                ...getNotificationStyle(notification.type),
               }}
             >
               <ListItemText
-                primary={<Typography variant="h6">{notification.type}</Typography>}
+                primary={
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {notification.type}
+                  </Typography>
+                }
                 secondary={
                   <Typography variant="body2" color="textSecondary">
                     {notification.description}

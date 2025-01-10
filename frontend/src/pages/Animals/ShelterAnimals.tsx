@@ -94,7 +94,7 @@ const ShelterAnimals =  () => {
           Twoje Zwierzęta
         </Typography>
         <Button onClick={() => navigate('/shelter/animals/add')}>
-            Dodaj Profil
+            Dodaj Zwierze
         </Button>
 
         <AnimalSearchFilters 

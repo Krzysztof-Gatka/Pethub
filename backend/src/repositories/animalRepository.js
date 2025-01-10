@@ -2,7 +2,7 @@ const { pool } = require('../config/db')
 
 
 const getAllAnimals = async (email) => {
-    const query = `SELECT a.id, a.name, a.age, a.description, a.shelter_id, i.img_url
+    const query = `SELECT a.id, a.name, TIMESTAMPDIFF(YEAR, a.birth_date, CURDATE()) AS age, a.description,a.type, a.shelter_id, i.img_url
             FROM animals a
             LEFT JOIN images i ON a.id = i.owner_id`;
     try {
@@ -25,28 +25,43 @@ const selectAnimalsByShelterId = async (shelter_id) => {
 }
 
 const getAnimalById = async (id) => {
-    const query = `SELECT a.id, a.name, a.age, a.description, a.shelter_id, i.img_url
-            FROM animals a
-            LEFT JOIN images i ON a.id = i.owner_id
-            WHERE a.id = ?`
+    const query = `
+        SELECT 
+            a.id, 
+            a.name, 
+            TIMESTAMPDIFF(YEAR, a.birth_date, CURDATE()) AS age, 
+            a.description,
+            a.breed, 
+            DATE_FORMAT(a.date_joined, '%d-%m-%Y') AS date_joined, -- Formatowanie daty
+            a.shelter_id, 
+            s.name AS shelter_name, -- Dołączenie nazwy schroniska
+            i.img_url
+        FROM animals a
+        LEFT JOIN images i ON a.id = i.owner_id
+        LEFT JOIN shelter_profiles s ON a.shelter_id = s.id -- Dołączenie tabeli shelter_profiles
+        WHERE a.id = ?;
+    `;
     try {
         const [rows] = await pool.query(query, [id]);
         return rows.length > 0 ? rows[0] : null;
     } catch (err) {
-        console.error('Error selecting animal:', err)
+        console.error('Error selecting animal:', err);
         throw err;
     }
-}
+};
 
-const insertAnimalData = async (name, age, description, shelter_id) => {
-    const query = `INSERT INTO animals (name, age, description, shelter_id) VALUES (?, ?, ?, ?)`
-    try {
-        const [animalResult] = await pool.query(query, [name, age, description, shelter_id])
-        return animalResult.insertId
-    } catch(err) {
-        console.error('Error inserting animal', err)
-    }
-}
+
+const insertAnimalData = async (name, birth_date, description, type, breed, shelter_id, date_joined, imageUrl) => {
+    const query = `
+        INSERT INTO animals (name, birth_date, description, type, breed, shelter_id, date_joined)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    const values = [name, birth_date, description, type, breed, shelter_id, date_joined];
+    await pool.query(query, values);
+};
+
+
+
 
 const insertImg = async (animalId, url) => {
     const query = `INSERT INTO images (owner_id, img_url) VALUES (?, ?)`

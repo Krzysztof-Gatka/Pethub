@@ -6,35 +6,37 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Slider,
-  Typography,
   Paper,
   IconButton,
-  Collapse
+  Collapse,
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
-import { 
-  AnimalFilters, 
-  DEFAULT_ANIMAL_FILTERS,
-  ANIMAL_CATEGORIES,
-  ANIMAL_SPECIES 
-} from '../../models/Filters';
+import { AnimalFilters, DEFAULT_ANIMAL_FILTERS } from '../../models/Filters';
 
 interface AnimalSearchFiltersProps {
   onFilterChange: (filters: AnimalFilters) => void;
-  shelters: { id: number; name: string; }[];
+  onPageReset: () => void; // Dodano nowy props do resetowania strony
+  shelters: { id: number; name: string }[];
 }
 
-const AnimalSearchFilters: React.FC<AnimalSearchFiltersProps> = ({ onFilterChange, shelters }) => {
+const AnimalSearchFilters: React.FC<AnimalSearchFiltersProps> = ({ onFilterChange, onPageReset, shelters }) => {
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<AnimalFilters>(DEFAULT_ANIMAL_FILTERS);
+  const [filters, setFilters] = useState<AnimalFilters>({
+    ...DEFAULT_ANIMAL_FILTERS,
+    shelter: '', // Domyślna wartość dla schroniska
+    ageRange: "", // Domyślna wartość dla wieku
+  });
 
   const handleChange = (field: keyof AnimalFilters, value: any) => {
+    console.log(`Pole: ${field}, Wartość: ${value}`); // Debugowanie
     const newFilters = { ...filters, [field]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
+    onPageReset(); // Resetowanie strony
   };
+
+  console.log('Schroniska:', shelters); // Debugowanie schronisk
 
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
@@ -52,43 +54,54 @@ const AnimalSearchFilters: React.FC<AnimalSearchFiltersProps> = ({ onFilterChang
       </Box>
 
       <Collapse in={showFilters}>
-        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
+          {/* Filtr Gatunek */}
           <FormControl fullWidth>
             <InputLabel>Gatunek</InputLabel>
             <Select
-              value={filters.species}
+              value={filters.species || ''}
               label="Gatunek"
               onChange={(e) => handleChange('species', e.target.value)}
             >
               <MenuItem value="">Wszystkie</MenuItem>
-              <MenuItem value={ANIMAL_SPECIES.DOG}>Psy</MenuItem>
-              <MenuItem value={ANIMAL_SPECIES.CAT}>Koty</MenuItem>
-              <MenuItem value={ANIMAL_SPECIES.OTHER}>Inne</MenuItem>
+              <MenuItem value="dog">Pies</MenuItem>
+              <MenuItem value="cat">Kot</MenuItem>
             </Select>
           </FormControl>
 
-          <FormControl fullWidth>
-            <InputLabel>Kategoria</InputLabel>
-            <Select
-              value={filters.category}
-              label="Kategoria"
-              onChange={(e) => handleChange('category', e.target.value)}
-            >
-              <MenuItem value="">Wszystkie</MenuItem>
-              <MenuItem value={ANIMAL_CATEGORIES.YOUNG}>Młode</MenuItem>
-              <MenuItem value={ANIMAL_CATEGORIES.ADULT}>Dorosłe</MenuItem>
-              <MenuItem value={ANIMAL_CATEGORIES.SENIOR}>Seniorzy</MenuItem>
-            </Select>
-          </FormControl>
+          {/* Filtr Wiek */}
+<FormControl fullWidth>
+  <InputLabel> Wiek </InputLabel>
+  <Select
+    labelId="age-range-label"
+    value={filters.ageRange || ''}
+    label="Wiek"
+    onChange={(e) => handleChange('ageRange', e.target.value)}
+  >
+    <MenuItem value="">Wszystkie</MenuItem>
+    <MenuItem value="young">Młode (0-2 lata)</MenuItem>
+    <MenuItem value="adult">Dorosłe (3-7 lat)</MenuItem>
+    <MenuItem value="senior">Starsze (8+ lat)</MenuItem>
+  </Select>
+</FormControl>
 
+
+
+          {/* Filtr Schronisko */}
           <FormControl fullWidth>
             <InputLabel>Schronisko</InputLabel>
             <Select
-              value={filters.shelter}
+              value={filters.shelter || ''} // Domyślna wartość
               label="Schronisko"
-              onChange={(e) => handleChange('shelter', e.target.value)}
+              onChange={(e) => handleChange('shelter', Number(e.target.value))} // Konwersja na liczbę
             >
-              <MenuItem value="">Wszystkie</MenuItem>
+              <MenuItem value="">Wszystkie schroniska</MenuItem>
               {shelters.map((shelter) => (
                 <MenuItem key={shelter.id} value={shelter.id}>
                   {shelter.name}
@@ -96,17 +109,6 @@ const AnimalSearchFilters: React.FC<AnimalSearchFiltersProps> = ({ onFilterChang
               ))}
             </Select>
           </FormControl>
-
-          <Box sx={{ px: 2 }}>
-            <Typography gutterBottom>Wiek</Typography>
-            <Slider
-              value={filters.ageRange}
-              onChange={(_, newValue) => handleChange('ageRange', newValue)}
-              valueLabelDisplay="auto"
-              min={0}
-              max={20}
-            />
-          </Box>
         </Box>
       </Collapse>
     </Paper>

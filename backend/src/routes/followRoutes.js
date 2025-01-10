@@ -17,6 +17,10 @@ router.post('/follow/add', addFollow);
 
 router.delete('/follow/delete', deleteFollow);
 
+router.post('/follow/add', addFollow);
+router.delete('/follow/delete', deleteFollow);
+
+
 router.get('/animal/:animalId', async (req, res) => {
   const { userId } = req.query;
   const { animalId } = req.params;
@@ -42,7 +46,7 @@ router.get('/animals', async (req, res) => {
 
   try {
     const query = `
-      SELECT a.id, a.name, a.age, a.description, i.img_url
+      SELECT a.id, a.name, TIMESTAMPDIFF(YEAR, a.birth_date, CURDATE()) AS age, a.description, i.img_url
       FROM follows_animals fa
       JOIN animals a ON fa.animal_id = a.id
       LEFT JOIN images i ON a.id = i.owner_id
@@ -102,6 +106,57 @@ router.delete('/animal/delete', async (req, res) => {
     }
   } catch (err) {
     console.error('Error removing animal follow:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Dodawanie obserwacji schroniska
+router.post('/shelter/add', async (req, res) => {
+  const { userId, targetId } = req.body;
+  try {
+    const query = `INSERT INTO follows_shelters (follower_id, shelter_id) VALUES (?, ?)`;
+    await pool.query(query, [userId, targetId]);
+    res.status(201).json({ message: 'Shelter followed successfully' });
+  } catch (err) {
+    console.error('Error adding shelter follow:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Usuwanie obserwacji schroniska
+router.delete('/shelter/delete', async (req, res) => {
+  const { userId, targetId } = req.body;
+  try {
+    const query = `DELETE FROM follows_shelters 
+                   WHERE follower_id = ? AND shelter_id = ?`;
+    const [result] = await pool.query(query, [userId, targetId]);
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: 'Shelter unfollowed successfully' });
+    } else {
+      res.status(404).json({ message: 'Follow not found' });
+    }
+  } catch (err) {
+    console.error('Error removing shelter follow:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+router.get('/shelter/:shelterId', async (req, res) => {
+  const { userId } = req.query;
+  const { shelterId } = req.params;
+
+  try {
+    const query = `SELECT * FROM follows_shelters WHERE follower_id = ? AND shelter_id = ?`;
+    const [rows] = await pool.query(query, [userId, shelterId]);
+
+    if (rows.length > 0) {
+      res.json({ followed: true });
+    } else {
+      res.json({ followed: false });
+    }
+  } catch (err) {
+    console.error('Error checking shelter follow status:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

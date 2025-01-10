@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 export interface AnimalModel {
@@ -18,16 +18,12 @@ export interface AnimalModel {
     img_url: string;
 }
 
-const AnimalCard = ({id, name, age, description, shelter_id, img_url}: AnimalModel) => {
+const AnimalCard = ({ id, name, age, description, img_url }: AnimalModel) => {
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
 
     const handleCardClick = () => {
-        navigate(`/animals/${id}`);
-    };
-
-    const handleAdopt = () => {
-        navigate(`/adopt/${id}`);
+        navigate(`/animals/${id}`); // Przejście do szczegółowego widoku zwierzaka
     };
 
     return (
@@ -39,7 +35,7 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}: AnimalMod
                     title={name}
                 />
             }
-            
+
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     {name}
@@ -53,9 +49,6 @@ const AnimalCard = ({id, name, age, description, shelter_id, img_url}: AnimalMod
             </CardContent>
             <CardActions>
                 <Button onClick={handleCardClick} size="small">Szczegóły</Button>
-                {isLoggedIn && (
-                    <Button onClick={handleAdopt} size="small">Adoptuj</Button>
-                )}
             </CardActions>
         </Card>
     );

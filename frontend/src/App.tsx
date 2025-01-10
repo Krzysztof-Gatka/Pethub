@@ -21,6 +21,8 @@ import Shelters from './pages/Shelters/Shelters';
 import Shelter from './pages/Shelters/Shelter';
 import ShelterAnimals from './pages/Animals/ShelterAnimals';
 import ShelterAnimal from './pages/Animals/ShelterAnimal';
+import AdoptionCard from './components/shared/AdoptionCard';
+import Adoptions from './pages/Adoptions/adoptions';
 
 function App() {
   return (
@@ -34,9 +36,12 @@ function App() {
         <Route path="/animals/:id" element={<Animal/>} />
         <Route path="/animals" element={<Animals/>} />
         <Route path="/signupform/:role" element={<SignUpForm/>}/>
+        <Route path="/adoptions" element={<Adoptions/>}/>
+        <Route path="/adoption/:id" element={<AdoptionCard/>}/>
 
         {/* guest and user routes */}
-        <Route path="/shelters/:id" element={<Shelter/>} />
+        <Route path="/shelters/:id" element={<Shelter />} />
+        
         {/* registration routes */}
         <Route path="/signup" element={<AccountTypeSelector />} />
         <Route path="/signup/:type" element={<RegistrationMethodSelector />} />
@@ -61,6 +66,7 @@ function App() {
         <Route path="/shelter/animals/add" element={<AnimalAdd/>} />
         <Route path="/shelter/animals/:id/edit" element={<Animals/>} />
         <Route path="/shelter/animals/:id/delete" element={<Animals/>} />
+        <Route path="/animals/:id" element={<Animals/>} />
       </Routes>
     </AuthProvider>
   )

@@ -12,10 +12,11 @@ const animalRoutes = require('./routes/animalRoutes')
 const dotenv = require('dotenv').config()
 const {connectDB} = require('./config/db')
 const followRoutes = require('./routes/followRoutes')
-const notificationRoutes = require('./routes/notificationRoutes');
+const notificationRoutes = require('./routes/notificationRoutes')
 const walkRoutes = require('./routes/walkRoutes')
 const profileRoutes = require('./routes/profileRoutes')
-const shelterRoutes = require('./routes/shelterRoutes');
+const shelterRoutes = require('./routes/shelterRoutes')
+const adoptionRoutes = require('./routes/adoptionRoutes');
 
 app.use(cookieParser());
 app.use(morgan('dev'))
@@ -24,6 +25,10 @@ app.use(cors({
   credentials: true, // Allow cookies to be sent
 }))
 app.use(bodyParser.json())
+
+app.use(express.json());
+
+app.use('/api/profiles', profileRoutes);
 
 connectDB();
 
@@ -36,6 +41,8 @@ app.use('/api/walks', walkRoutes)
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/profiles', profileRoutes)
 app.use('/api/shelter', shelterRoutes);
+app.use('/api', shelterRoutes);
+app.use('/api/adoptions', adoptionRoutes);
 
 
 

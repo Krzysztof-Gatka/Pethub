@@ -1,5 +1,4 @@
 const express = require('express');
-const { pool } = require('../config/db'); 
 const {
   getUserNotifications,
   checkWalksForNotifications,
@@ -8,29 +7,22 @@ const {
 
 const router = express.Router();
 
+// Pobieranie powiadomień użytkownika
 router.get('/', getUserNotifications);
 
-router.get('/test-notifications', checkWalksForNotifications);
+// Sprawdzanie spacerów na dziś i jutro
+router.get('/check-walks', async (req, res) => {
+  try {
+    await checkWalksForNotifications();
+    res.status(200).json({ message: 'Walk notifications checked' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error checking walks for notifications' });
+  }
+});
 
+// Oznaczanie powiadomienia jako przeczytane
 router.post('/read', markNotificationAsRead);
+router.get('/check-walks', checkWalksForNotifications);
 
-router.delete('/', async (req, res) => {
-    const { notificationId } = req.body;
-  
-    try {
-      const query = `DELETE FROM notifications WHERE id = ?`;
-      const [result] = await pool.query(query, [notificationId]);
-  
-      if (result.affectedRows > 0) {
-        res.status(200).json({ message: 'Notification deleted successfully' });
-      } else {
-        res.status(404).json({ message: 'Notification not found' });
-      }
-    } catch (err) {
-      console.error('Error deleting notification:', err.message);
-      res.status(500).json({ error: 'Error deleting notification' });
-    }
-  });
-  
 
 module.exports = router;

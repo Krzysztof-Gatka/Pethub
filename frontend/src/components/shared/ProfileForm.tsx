@@ -24,7 +24,6 @@ interface FormData {
   age?: number;
   gender?: 'male' | 'female' | 'other';
   name?: string;
-  address?: string;
   description?: string;
   shelter_id?:number;
   city?: string,
@@ -41,6 +40,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const {user} = useAuth();
+  console.log('Logged in user:', user);
   const [image, setImage] = useState<File | null>(null);
   
   
@@ -73,22 +73,33 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
     }
   }
 
-  const handleShelterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('userId:', user?.userId)
-    formData.userId = user?.userId;
-    console.log(formData)
-    if(image) formData.image = image;
+// ...
+const handleShelterSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  // userId bierzemy np. z kontekstu `useAuth()` lub z parametru:
+  formData.userId = user?.userId; // lub cokolwiek innego
+  console.log(formData);
 
-    try {
-      const response = await axios.post(`http://localhost:3000/api/profiles/shelter/create`, formData, {
+  // Na backend wysyłamy parametry: 
+  //  userId, name, city, street, postal_code, building, description, phone
+  // a nie "address" ;)
+  
+  if (image) formData.image = image; // jeśli chcesz wysyłać zdjęcie
+  
+  try {
+    const response = await axios.post(
+      `http://localhost:3000/api/profiles/shelter/create`,
+      formData,
+      {
         headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      navigate('/')
-    } catch(error) {
-      console.log('Błąd podczas zapisywania profilu schroniska')
-    }
+      }
+    );
+    // ...
+  } catch (error) {
+    console.log('Błąd podczas zapisywania profilu schroniska');
   }
+};
+
 
 
 
@@ -227,14 +238,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
                     sx={{ mb: 3 }}
                   />
                   <TextField
-                fullWidth
-                label="Telefon"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange('phone')}
-                required
-                sx={{ mb: 3 }}
-              />
+                    fullWidth
+                    label="Telefon"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange('phone')}
+                    required
+                    sx={{ mb: 3 }}
+                  />
+
                   <Button
                     component="label"
                     variant="contained"

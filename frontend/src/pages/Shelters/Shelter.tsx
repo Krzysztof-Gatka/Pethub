@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Container, 
   Typography, 
@@ -15,87 +15,101 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import PetsIcon from '@mui/icons-material/Pets';
 import { ShelterModel } from '../../models/Shelter';
-import AnimalCard from '../../components/shared/AnimalCard';
+import AnimalSearchFilters from '../../components/shared/AnimalSearchFilters';
 import { useAuth } from '../../hooks/useAuth';
 import axios from 'axios';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
+const FOLLOW_SHELTER_API_URL = 'http://localhost:3000/api/follows/shelter';
 
 const Shelter = () => {
   const { id } = useParams<{ id: string }>();
-  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
   const [shelter, setShelter] = useState<ShelterModel | null>(null);
   const [animals, setAnimals] = useState([]);
+  const [filteredAnimals, setFilteredAnimals] = useState([]);
   const [showAnimals, setShowAnimals] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
 
   const fetchAnimals = async () => {
-    const response = await axios.get(`http://localhost:3000/api/animals/shelter?id=${Number(id)}`)
-    const animals = response.data
-    setAnimals(animals)
-  }
+    const response = await axios.get(`http://localhost:3000/api/animals/shelter?id=${Number(id)}`);
+    const animals = response.data.map((animal: any) => ({
+      ...animal,
+      age: Math.floor((new Date().getTime() - new Date(animal.birth_date).getTime()) / (1000 * 60 * 60 * 24 * 365.25)), // Obliczanie wieku
+    }));
+    setAnimals(animals);
+    setFilteredAnimals(animals);
+  };
 
   const fetchShelter = async () => {
-    const response = await axios.get(`http://localhost:3000/api/shelter/profile?id=${Number(id)}`)
-    const shelter = response.data
-    console.log(shelter)
+    const response = await axios.get(`http://localhost:3000/api/shelter/profile?id=${Number(id)}`);
+    const shelter = response.data;
     setShelter(shelter);
-  }
+  };
+
+  const fetchFollowStatus = async () => {
+    try {
+      if (user) {
+        const response = await axios.get(`${FOLLOW_SHELTER_API_URL}/${id}?userId=${user.userId}`);
+        setIsFollowed(response.data.followed); // Ustawia stan na podstawie odpowiedzi API
+      }
+    } catch (err) {
+      console.error('Error fetching follow status:', err);
+    }
+  };
+
+  const handleFollowShelter = async () => {
+    try {
+      if (isFollowed) {
+        await axios.delete(`${FOLLOW_SHELTER_API_URL}/delete`, {
+          data: { userId: user?.userId, targetId: id },
+        });
+        setIsFollowed(false);
+      } else {
+        await axios.post(`${FOLLOW_SHELTER_API_URL}/add`, {
+          userId: user?.userId,
+          targetId: id,
+        });
+        setIsFollowed(true);
+      }
+    } catch (err) {
+      console.error('Error toggling follow status:', err);
+    }
+  };
+
+  const handleFilterChange = (filters) => {
+    const filtered = animals.filter((animal) => {
+      if (filters.searchTerm && !animal.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+        return false;
+      }
+      if (filters.species && animal.type !== filters.species) {
+        return false;
+      }
+      if (filters.ageRange) {
+        const age = parseInt(animal.age, 10);
+        if (
+          (filters.ageRange === 'young' && (age < 0 || age > 2)) ||
+          (filters.ageRange === 'adult' && (age < 3 || age > 7)) ||
+          (filters.ageRange === 'senior' && age < 8)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
+    setFilteredAnimals(filtered);
+  };
+
+  const handleShowAnimals = () => {
+    setShowAnimals(!showAnimals);
+  };
 
   useEffect(() => {
     fetchShelter();
     fetchAnimals();
-    // Dane testowe schroniska
-    // const testShelter: ShelterModel = {
-    //   shelter_id: parseInt(id || '1'),
-    //   name: "Schronisko Na Paluchu",
-    //   street: "ul. Paluch 2",
-    //   city: "Warszawa",
-    //   postal_code: "02-147",
-    //   building: "",
-    //   description: "Największe schronisko dla bezdomnych zwierząt w Warszawie",
-    //   phone: "+48 22 868 15 79",
-    //   email: "kontakt@napaluchu.waw.pl"
-    // };
-  }, [id]);
-
-  // Dane testowe zwierząt
-  const mockAnimals = [
-    {
-      id: 1,
-      name: "Max",
-      age: "5 lat",
-      description: "Przyjazny golden retriever",
-      img_url: "/sample-dog-1.jpg",
-      species: "dog"
-    },
-    {
-      id: 2,
-      name: "Luna",
-      age: "3 lata",
-      description: "Spokojna kotka",
-      img_url: "/sample-cat-1.jpg",
-      species: "cat"
-    },
-    {
-      id: 3,
-      name: "Rex",
-      age: "2 lata",
-      description: "Energiczny owczarek niemiecki",
-      img_url: "/sample-dog-2.jpg",
-      species: "dog"
-    }
-  ];
-
-  const handleShowAnimals = () => {
-    if (!showAnimals) {
-      // fetchAnimals();
-      // setAnimals(mockAnimals);
-    }
-    setShowAnimals(!showAnimals);
-  };
-
-  const handleFollow = async () => {
-    setIsFollowed(!isFollowed);
-  };
+    if (isLoggedIn) fetchFollowStatus(); // Upewnij się, że status obserwacji jest sprawdzany
+  }, [id, isLoggedIn]);
 
   if (!shelter) return null;
 
@@ -110,12 +124,21 @@ const Shelter = () => {
             </Typography>
             {isLoggedIn && (
               <Button
-                variant={isFollowed ? "contained" : "outlined"}
-                color="primary"
-                onClick={handleFollow}
-              >
-                {isFollowed ? 'Obserwujesz' : 'Obserwuj'}
-              </Button>
+                        variant="outlined"
+                        startIcon={<FavoriteIcon />}
+                        size="large"
+                        onClick={handleFollowShelter}
+                        sx={{
+                          color: isFollowed ? '#9c27b0' : 'primary.main',
+                          borderColor: isFollowed ? '#9c27b0' : 'primary.main',
+                          '&:hover': {
+                            borderColor: isFollowed ? '#7b1fa2' : 'primary.dark',
+                            color: isFollowed ? '#7b1fa2' : 'primary.dark',
+                          },
+                        }}
+                      >
+                        {isFollowed ? 'Przestań obserwować' : 'Obserwuj'}
+                      </Button>
             )}
           </Box>
 
@@ -129,7 +152,7 @@ const Shelter = () => {
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <PhoneIcon sx={{ mr: 2, color: 'primary.main' }} />
-                <Typography>{`${shelter.phone_number.split('').slice(0,3).join('')} ${shelter.phone_number.split('').slice(3,6).join('')} ${shelter.phone_number.split('').slice(6,9).join('')}`}</Typography>
+                <Typography>{shelter.phone_number}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                 <EmailIcon sx={{ mr: 2, color: 'primary.main' }} />
@@ -153,10 +176,51 @@ const Shelter = () => {
         </Paper>
 
         <Collapse in={showAnimals}>
+          <AnimalSearchFilters 
+            onFilterChange={handleFilterChange} 
+            shelters={[]} // No shelter filtering here
+            hideShelterFilter={true} // Ukrywa pole schroniska
+          />
           <Grid container spacing={3}>
-            {animals.map((animal) => (
+            {filteredAnimals.map((animal) => (
               <Grid item xs={12} sm={6} md={4} key={animal.id}>
-                <AnimalCard {...animal} />
+                <Box 
+                  sx={{ 
+                    border: '1px solid #ddd', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    transition: 'transform 0.2s', 
+                    '&:hover': { transform: 'scale(1.05)' } 
+                  }}
+                >
+                  {animal.img_url && (
+                    <img 
+                      src={animal.img_url} 
+                      alt={animal.name} 
+                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                    />
+                  )}
+                  <Box sx={{ p: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                      {animal.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {animal.description}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Wiek: {animal.age} lat
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => navigate(`/animals/${animal.animal_id}`)}
+                      sx={{ mt: 1 }}
+                    >
+                      Szczegóły
+                    </Button>
+                  </Box>
+                </Box>
               </Grid>
             ))}
           </Grid>

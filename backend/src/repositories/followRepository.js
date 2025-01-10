@@ -1,10 +1,20 @@
 const { pool } = require('../config/db');
 
 const getUserShelterFollows = async (userId) => {
-  const query = `SELECT s.id, s.organization_name, s.address
-                 FROM follows_shelters fs
-                 JOIN shelter_profiles s ON fs.shelter_id = s.id
-                 WHERE fs.follower_id = ?`;
+  const query = `
+    SELECT 
+      s.id, 
+      s.name, 
+      s.city, 
+      s.street, 
+      s.building, 
+      s.postal_code, 
+      s.phone_number, 
+      s.description
+    FROM follows_shelters fs
+    JOIN shelter_profiles s ON fs.shelter_id = s.id
+    WHERE fs.follower_id = ?
+  `;
 
   try {
     const [rows] = await pool.query(query, [userId]);
@@ -15,12 +25,23 @@ const getUserShelterFollows = async (userId) => {
   }
 };
 
+
+
 const getUserAnimalFollows = async (userId) => {
-  const query = `SELECT a.id, a.name, a.description, i.img_url
-                 FROM follows_animals fa
-                 JOIN animals a ON fa.animal_id = a.id
-                 LEFT JOIN images i ON a.id = i.owner_id
-                 WHERE fa.follower_id = ?`;
+  const query = `
+    SELECT 
+      a.id, 
+      a.name, 
+      a.type,
+      TIMESTAMPDIFF(YEAR, a.birth_date, CURDATE()) AS age, 
+      a.description, 
+      a.breed, 
+      i.img_url
+    FROM follows_animals fa
+    JOIN animals a ON fa.animal_id = a.id
+    LEFT JOIN images i ON a.id = i.owner_id
+    WHERE fa.follower_id = ?
+  `;
 
   try {
     const [rows] = await pool.query(query, [userId]);
@@ -30,6 +51,7 @@ const getUserAnimalFollows = async (userId) => {
     throw err;
   }
 };
+
 
 const addFollowToDb = async (userId, targetId, type) => {
   let query;

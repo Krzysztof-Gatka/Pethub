@@ -96,21 +96,17 @@ WHERE shelter_id = ?;`,
 
 const getShelterProfiles = async (req, res) => {
     try {
-        const [rows] = await pool.execute(
-            `SELECT s.shelter_id, u.email, s.name, s.city, s.street, s.postal_code, s.building, s.description, s.phone_number FROM shelter_profiles s
-            LEFT JOIN users u
-            ON s.shelter_id = u.id;`,
-        );
-        
-        if (rows.length === 0) {
-            return res.status(404).json({ message: 'Shelter profile not found' });
-        }
-        
-        res.status(200).json(rows);
+      const [rows] = await pool.execute(`
+        SELECT shelter_id AS id, name, city, street, postal_code, building, description, phone_number
+        FROM shelter_profiles
+      `);
+      res.status(200).json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+      console.error('Błąd podczas pobierania schronisk:', err);
+      res.status(500).json({ error: 'Błąd podczas pobierania schronisk' });
     }
-};
+  };
+  
 
 module.exports = {
     createShelterProfile,

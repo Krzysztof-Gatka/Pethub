@@ -11,6 +11,7 @@ const {
 // Get shelter profile
 router.get('/profile', getShelterProfile);
 router.get('/profiles', getShelterProfiles);
+router.get('/shelters', getShelterProfiles);
 
 // Create new shelter profile
 router.post('/profile', createShelterProfile);

@@ -8,25 +8,83 @@ import {
   Checkbox,
   FormControlLabel,
   Paper,
-  Divider,
   Grid,
-  Alert
+  Alert,
 } from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
 import ShelterLayout from '../../layouts/ShelterLayout';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
-interface AdoptionFormProps {
-  animalId?: string;
-  animalName?: string;
-}
+const API_URL = 'http://localhost:3000/api/adoptions';
 
-const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => {
+const AdoptionForm: React.FC = () => {
+  const { animalId } = useParams<{ animalId: string }>(); // Pobranie ID zwierzęcia z URL
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [loading, setLoading] = useState(false); // Obsługa ładowania
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    age: '',
+    street: '',
+    building: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'Polska',
+    additionalInfo: [],
+  });
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  // Obsługa zmiany wartości w polach formularza
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index?: number) => {
+    if (typeof index === 'number') {
+      const updatedAdditionalInfo = [...formData.additionalInfo];
+      updatedAdditionalInfo[index] = e.target.value;
+      setFormData({ ...formData, additionalInfo: updatedAdditionalInfo });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+  };
+
+  // Obsługa wysyłania formularza
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Tutaj dodamy logikę wysyłania formularza
+
+    if (!termsAccepted || !privacyAccepted) {
+      alert('Musisz zaakceptować wszystkie oświadczenia.');
+      return;
+    }
+
+    if (!animalId) {
+      alert('Brak ID zwierzęcia! Upewnij się, że ID zwierzęcia zostało przekazane.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        user_id: 1, // Tu możesz użyć identyfikatora zalogowanego użytkownika
+        animal_id: animalId,
+        adoptionData: formData,
+      };
+
+      console.log('Payload:', payload);
+
+      await axios.post(API_URL, payload);
+      alert('Formularz adopcyjny został pomyślnie wysłany!');
+      navigate('/adoptions'); // Przekierowanie do widoku adopcji użytkownika
+    } catch (error) {
+      console.error('Error submitting adoption form:', error);
+      alert('Wystąpił problem podczas wysyłania formularza.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,20 +92,26 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Paper elevation={3} sx={{ p: 4 }}>
           {/* Nagłówek */}
-          <Typography variant="h4" component="h1" gutterBottom sx={{
-            textAlign: 'center',
-            mb: 4,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2
-          }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              textAlign: 'center',
+              mb: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+            }}
+          >
             <PetsIcon fontSize="large" />
             Formularz Adopcyjny
           </Typography>
 
           <Alert severity="info" sx={{ mb: 4 }}>
-            Uwaga! Odpisujemy tylko na wybrane zgłoszenia.
+            Wypełnij formularz, aby zgłosić chęć adopcji zwierzęcia. Jeżeli pozytywnie przejdzie on weryfikację,
+            przejdziemy do następnego etapu adopcji.
           </Alert>
 
           <form onSubmit={handleSubmit}>
@@ -61,6 +125,9 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                   required
                   fullWidth
                   label="Imię"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
                   variant="outlined"
                 />
               </Grid>
@@ -69,6 +136,9 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                   required
                   fullWidth
                   label="Nazwisko"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
                   variant="outlined"
                 />
               </Grid>
@@ -77,8 +147,11 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                   required
                   fullWidth
                   label="Email"
-                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   variant="outlined"
+                  type="email"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -86,6 +159,9 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                   required
                   fullWidth
                   label="Telefon"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
                   variant="outlined"
                 />
               </Grid>
@@ -94,81 +170,20 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                   required
                   fullWidth
                   label="Wiek"
+                  name="age"
+                  value={formData.age}
+                  onChange={handleChange}
                   type="number"
                   variant="outlined"
                 />
               </Grid>
             </Grid>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-              Adres
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Ulica"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Numer"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Miasto"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Województwo"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Kod pocztowy"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Państwo"
-                  variant="outlined"
-                  defaultValue="Polska"
-                />
-              </Grid>
-            </Grid>
-
-            {/* Proces adopcyjny */}
+            {/* Pytania dodatkowe */}
             <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
               Proces adopcyjny
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Imię zwierzęcia"
-                  variant="outlined"
-                  defaultValue={animalName || ''}
-                />
-              </Grid>
               {[
                 "Kto będzie właścicielem zwierzęcia i będzie sprawować większość obowiązków związanych z jego posiadaniem?",
                 "Prosimy o szczegółowy opis środowiska, w którym będzie mieszkało adoptowane zwierzę.",
@@ -176,11 +191,11 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                 "Czy w Twoim najbliższym otoczeniu znajdują się inne zwierzęta?",
                 "Jak będzie wyglądać standardowy dzień adoptowanego zwierzęcia w Twoim domu?",
                 "Jakie jest Twoje podejście do aktywności zwierzęcia?",
-                "Podaj przykładowe marki karm jakie byś chciał podawać swojemu zwierzęciu.",
+                "Podaj przykładowe marki karm, jakie byś chciał podawać swojemu zwierzęciu.",
                 "Czy zamierzasz uczyć adoptowane zwierzę trików i komend, uczestniczyć w kursach szkoleniowych itp.?",
                 "Czy adoptowane zwierzę będzie Ci towarzyszyć w wyjazdach?",
                 "Czy zdajesz sobie sprawę z długoterminowych zobowiązań związanych z adopcją?",
-                "Opisz sytuacje, które mogłyby spowodować oddanie zwierzęcia."
+                "Opisz sytuacje, które mogłyby spowodować oddanie zwierzęcia.",
               ].map((question, index) => (
                 <Grid item xs={12} key={index}>
                   <TextField
@@ -190,6 +205,7 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                     variant="outlined"
                     multiline
                     rows={4}
+                    onChange={(e) => handleChange(e, index)}
                   />
                 </Grid>
               ))}
@@ -208,7 +224,7 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                     required
                   />
                 }
-                label="Oświadczam, że mam świadomość, że przed adopcją należy upewnić się że u żadnego z domowników nie występuje alergia na sierść lub ślinę zwierzęcia a jeśli występuje należy adopcję skonsultować z lekarzem."
+                label="Oświadczam, że mam świadomość zobowiązań związanych z adopcją."
               />
             </Box>
             <Box sx={{ mt: 2 }}>
@@ -220,7 +236,7 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                     required
                   />
                 }
-                label="Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z polityką prywatności w celu realizacji procesu i umowy adopcyjnej."
+                label="Wyrażam zgodę na przetwarzanie moich danych osobowych w celu realizacji adopcji."
               />
             </Box>
 
@@ -231,9 +247,9 @@ const AdoptionForm: React.FC<AdoptionFormProps> = ({ animalId, animalName }) => 
                 color="primary"
                 size="large"
                 type="submit"
-                disabled={!termsAccepted || !privacyAccepted}
+                disabled={loading || !termsAccepted || !privacyAccepted}
               >
-                Dalej
+                {loading ? 'Wysyłanie...' : 'Wyślij'}
               </Button>
             </Box>
           </form>

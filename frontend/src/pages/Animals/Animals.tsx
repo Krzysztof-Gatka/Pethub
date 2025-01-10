@@ -18,47 +18,68 @@ import AnimalSearchFilters from '../../components/shared/AnimalSearchFilters';
 import { AnimalFilters } from '../../models/Filters';
 
 const Animals = () => {
-  const [animals, setAnimals] = useState([]);
-  const [filteredAnimals, setFilteredAnimals] = useState([]);
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
+  const [animals, setAnimals] = useState([]); // Lista zwierząt
+  const [filteredAnimals, setFilteredAnimals] = useState([]); // Filtrowane zwierzęta
+  const [shelters, setShelters] = useState([]); // Lista schronisk
+  const [page, setPage] = useState(1); // Obecna strona
+  const itemsPerPage = 6; // Ilość zwierząt na stronę
   const navigate = useNavigate();
 
+  // Pobieranie zwierząt
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
         const response = await axios.get('http://localhost:3000/api/animals');
         const fetchedAnimals = response.data;
         setAnimals(fetchedAnimals);
-        setFilteredAnimals(fetchedAnimals);
+        setFilteredAnimals(fetchedAnimals); // Na początku wszystkie zwierzęta
       } catch (err) {
-        console.error('Błąd podczas pobierania danych:', err);
+        console.error('Błąd podczas pobierania danych o zwierzętach:', err);
       }
     };
 
     fetchAnimals();
   }, []);
 
+  // Pobieranie schronisk
+  useEffect(() => {
+    const fetchShelters = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/shelters');
+        setShelters(response.data); // Ustawienie listy schronisk
+      } catch (err) {
+        console.error('Błąd podczas pobierania schronisk:', err);
+      }
+    };
+
+    fetchShelters();
+  }, []);
+
+  // Obsługa zmiany filtrów
   const handleFilterChange = (filters: AnimalFilters) => {
-    let filtered = animals.filter((animal) => {
+    const filtered = animals.filter((animal) => {
       if (filters.searchTerm && !animal.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
         return false;
       }
-      if (filters.category && animal.category !== filters.category) {
+      if (filters.species && animal.type !== filters.species) {
         return false;
       }
-      if (filters.species && animal.species !== filters.species) {
-        return false;
+      if (filters.ageRange) {
+        const age = parseInt(animal.age, 10);
+        if (
+          (filters.ageRange === 'young' && (age < 0 || age > 2)) ||
+          (filters.ageRange === 'adult' && (age < 3 || age > 7)) ||
+          (filters.ageRange === 'senior' && age < 8)
+        ) {
+          return false;
+        }
       }
-      if (filters.shelter && animal.shelter_id !== filters.shelter) {
-        return false;
-      }
-      const age = parseInt(animal.age);
-      if (filters.ageRange && (age < filters.ageRange[0] || age > filters.ageRange[1])) {
+      if (filters.shelter && animal.shelter_id !== Number(filters.shelter)) {
         return false;
       }
       return true;
     });
+
     setFilteredAnimals(filtered);
   };
 
@@ -75,46 +96,53 @@ const Animals = () => {
     navigate(`/animals/${animalId}`);
   };
 
-  const handleAdopt = (animalId) => {
-    navigate(`/adopt/${animalId}`);
-  };
-
   return (
     <ShelterLayout>
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ 
-          textAlign: 'center',
-          mb: 4,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 2
-        }}>
+        {/* Nagłówek */}
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{
+            textAlign: 'center',
+            mb: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+          }}
+        >
           <PetsIcon fontSize="large" />
           Dostępne Zwierzęta
         </Typography>
 
+        {/* Filtry */}
         <AnimalSearchFilters 
           onFilterChange={handleFilterChange} 
-          shelters={[]} // Tu należy dodać listę schronisk
+          onPageReset={() => setPage(1)}
+          shelters={shelters} // Przekazanie schronisk do filtrów
         />
 
+        {/* Lista zwierząt */}
         <Grid container spacing={3}>
           {currentAnimals.map((animal) => (
             <Grid item xs={12} sm={6} md={4} key={animal.id}>
-              <Card sx={{ 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.02)'
-                }
-              }}>
+              <Card
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
                   height="200"
-                  image={animal.img_url || "/api/placeholder/400/300"}
+                  image={animal.img_url || '/api/placeholder/400/300'}
                   alt={animal.name}
                 />
                 <CardContent sx={{ flexGrow: 1 }}>
@@ -128,43 +156,31 @@ const Animals = () => {
                     {animal.description}
                   </Typography>
                 </CardContent>
-                <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
-                  <Button 
-                    size="small" 
-                    variant="outlined" 
-                    color="primary" 
+                <Box sx={{ p: 2 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="primary"
                     fullWidth
                     onClick={() => handleAnimalDetails(animal.id)}
                   >
                     Szczegóły
                   </Button>
-                  {/* <Button 
-                    size="small" 
-                    variant="contained" 
-                    color="primary" 
-                    fullWidth
-                    onClick={() => handleAdopt(animal.id)}
-                  >
-                    Adoptuj
-                  </Button> */}
                 </Box>
               </Card>
             </Grid>
           ))}
         </Grid>
 
+        {/* Paginacja */}
         {totalPages > 1 && (
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center',
-            mt: 4 
-          }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <Pagination 
               count={totalPages} 
               page={page} 
-              onChange={handlePageChange}
-              color="primary"
-              size="large"
+              onChange={handlePageChange} 
+              color="primary" 
+              size="large" 
             />
           </Box>
         )}
