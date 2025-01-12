@@ -96,16 +96,18 @@ WHERE shelter_id = ?;`,
 
 const getShelterProfiles = async (req, res) => {
     try {
-      const [rows] = await pool.execute(`
-        SELECT shelter_id AS id, name, city, street, postal_code, building, description, phone_number
-        FROM shelter_profiles
-      `);
-      res.status(200).json(rows);
+        const [rows] = await pool.execute(`
+            SELECT shelter_id AS id, name, city, street, postal_code, building, description, phone_number
+            FROM shelter_profiles
+        `);
+
+        res.status(200).json(rows);
     } catch (err) {
-      console.error('Błąd podczas pobierania schronisk:', err);
-      res.status(500).json({ error: 'Błąd podczas pobierania schronisk' });
+        console.error('Błąd podczas pobierania schronisk:', err);
+        res.status(500).json({ error: 'Błąd podczas pobierania schronisk' });
     }
-  };
+};
+
   
 
 module.exports = {

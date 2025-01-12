@@ -23,8 +23,10 @@ const Shelters = () => {
   // Fetch shelters from the backend
   const fetchShelters = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/shelter/profiles');
-      console.log('Pobrane schroniska:', response.data); // Debugowanie
+      const response = await axios.get('http://localhost:3000/api/shelter/profiles', {
+        responseType: 'json', // Wymuszenie JSON
+    });
+    console.log('Dane z backendu (surowe):', response.data); // Debug surowych danych
       setShelters(response.data);
       setFilteredShelters(response.data);
     } catch (error) {

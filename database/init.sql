@@ -95,21 +95,23 @@ CREATE TABLE adoption_step (
 
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    owner_id INT NOT NULL, -- ID użytkownika lub schroniska, które otrzymuje powiadomienie
-    date DATETIME NOT NULL, -- Dokładny czas utworzenia powiadomienia
+    owner_id INT NOT NULL, 
+    date DATETIME NOT NULL, 
     type ENUM(
-        'new_walk',           -- Spacer zaplanowany
-        'walk_cancelled',     -- Spacer anulowany
-        'adoption_request',   -- Nowy wniosek adopcyjny
-        'adoption_cancelled', -- Wniosek adopcyjny anulowany
-        'daily_reminder',     -- Przypomnienie o spacerze
-        'adoption_status',    -- Status wniosku adopcyjnego zmieniony (zaakceptowany/odrzucony/usunięty)
-        'general'             -- Ogólne powiadomienie
+        'new_walk',           
+        'walk_cancelled',     
+        'adoption_request',   
+        'adoption_cancelled',
+        'adoption_approved', 
+        'adoption_rejected',
+        'daily_reminder',     
+        'adoption_status',    
+        'general'             
     ),
-    status TINYINT(1) NOT NULL DEFAULT 0, -- 0 = nieprzeczytane, 1 = przeczytane
-    description TEXT, -- Szczegóły powiadomienia
-    target_id INT, -- ID powiązanej akcji (np. spaceru lub adopcji)
-    owner_type ENUM('user', 'shelter'), -- Czy powiadomienie dotyczy użytkownika czy schroniska
+    status TINYINT(1) NOT NULL DEFAULT 0, 
+    description TEXT, 
+    target_id INT, 
+    owner_type ENUM('user', 'shelter'), 
     FOREIGN KEY (owner_id) REFERENCES users(id)
 );
 
@@ -126,34 +128,40 @@ CREATE TABLE walks (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- VIEWS
 
--- dane zwierząt plus url zdjęcia
 CREATE VIEW animal_profiles_view AS
 SELECT a.id AS animal_id, a.name, a.birth_date, a.date_joined, a.description, a.type, a.breed, a.shelter_id, i.img_url
 FROM animals a
 LEFT JOIN images i ON a.id = i.owner_id;
 
--- dane schroniska plus email
 CREATE VIEW shelter_profiles_view AS
 SELECT u.email, s.name, s.city, s.street, s.postal_code, s.building, s.description, s.phone_number
 FROM shelter_profiles s
 LEFT JOIN users u ON s.shelter_id = u.id;
 
--- profile obserwowanych zwierząt danego użytkownika
 CREATE VIEW animal_profiles_follows_view AS
 SELECT a.id AS animal_id, a.name, a.birth_date, a.date_joined, a.description, a.type, a.breed, a.shelter_id, i.img_url, fa.follower_id
 FROM animals a
 LEFT JOIN images i ON a.id = i.owner_id
 RIGHT JOIN follows_animals fa ON fa.animal_id = a.id;
 
--- spacery w danym schronisku
 CREATE VIEW shelter_walks_view AS
 SELECT w.animal_id, a.shelter_id, w.user_id, w.date, w.time_slot, w.status
 FROM walks w
 LEFT JOIN animals a ON w.animal_id = a.id;
 
--- INSERT DATA
+ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE user_profiles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE shelter_profiles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE animals CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE images CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE follows_animals CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE follows_shelters CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE adoptions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE adoption_step CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE notifications CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE walks CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 
 INSERT INTO users (email, password_hash, role)
 VALUES
@@ -198,3 +206,12 @@ VALUES
     (2, 'animal', 'https://res.cloudinary.com/dnwj6jjqh/image/upload/v1735755578/srouxqxnrs32zdt07wa8.jpg'),
     (3, 'animal', 'https://res.cloudinary.com/dnwj6jjqh/image/upload/v1735756076/axjm2bxc05awmx6dcuzq.jpg'),
     (4, 'animal', 'https://res.cloudinary.com/dnwj6jjqh/image/upload/v1735756097/t0uvbvrwhdjtoqszrmcq.jpg');
+
+
+
+UPDATE shelter_profiles
+SET city = CONVERT(CAST(CONVERT(city USING latin1) AS BINARY) USING utf8mb4);
+
+UPDATE shelter_profiles
+SET description = CONVERT(CAST(CONVERT(description USING latin1) AS BINARY) USING utf8mb4);
+

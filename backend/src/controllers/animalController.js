@@ -47,10 +47,9 @@ cloudinary.config({
 const addAnimal = async (req, res) => {
   try {
       const { name, birth_date, description, type, breed, shelter_id } = req.body;
-      const date_joined = new Date().toISOString().split('T')[0]; // Automatyczna data dołączenia
-      const imageUrl = req.file ? req.file.path : null; // Jeśli obraz jest przesyłany
+      const date_joined = new Date().toISOString().split('T')[0]; 
+      const imageUrl = req.file ? req.file.path : null; 
 
-      // Wstaw dane do bazy danych
       await insertAnimalData(name, birth_date, description, type, breed, shelter_id, date_joined, imageUrl);
       res.status(201).json({ message: 'Animal added successfully' });
   } catch (err) {
@@ -70,7 +69,7 @@ const getAnimalWalks = async (req, res) => {
 const getAnimalWalkSlots = async (req, res) => {
     const { animalId } = req.params;
     console.log(animalId)
-    const { date } = req.query; // e.g., "2025-01-05"
+    const { date } = req.query; 
     console.log(date)
     const bookedSlots = await getBookedSlots(animalId, date)
     console.log(bookedSlots)

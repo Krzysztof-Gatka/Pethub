@@ -4,11 +4,15 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql_container
+    command: [
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci"
+    ]
     environment:
-      - MYSQL_ROOT_PASSWORD
-      - MYSQL_DATABASE
-      - MYSQL_USER
-      - MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
     ports:
       - "3307:3306"
     volumes:
@@ -22,10 +26,12 @@ services:
       context: ./backend
     container_name: backend-api
     environment:
-      - DB_HOST
-      - DB_USER
-      - DB_PASSWORD
-      - DB_NAME
+      - DB_HOST=mysql_container
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_NAME=${MYSQL_DATABASE}
+      - CHARSET=utf8mb4
+      - COLLATION=utf8mb4_unicode_ci
     ports:
       - "3000:3000"
     depends_on:
@@ -33,8 +39,8 @@ services:
     networks:
       - app_network
     volumes:
-      - ./backend:/usr/pethub/backend 
-      - /usr/pethub/backend/node_modules 
+      - ./backend:/usr/pethub/backend
+      - /usr/pethub/backend/node_modules
 
   front:
     build:
@@ -45,8 +51,8 @@ services:
     depends_on:
       - api
     volumes:
-      - ./frontend:/usr/pethub/frontend 
-      - /usr/pethub/frontend/node_modules 
+      - ./frontend:/usr/pethub/frontend
+      - /usr/pethub/frontend/node_modules
 
 networks:
   app_network:

@@ -3,6 +3,7 @@ const {
   getUserNotifications,
   checkWalksForNotifications,
   markNotificationAsRead,
+  deleteNotification,
 } = require('../controllers/notificationController');
 
 const router = express.Router();
@@ -23,6 +24,9 @@ router.get('/check-walks', async (req, res) => {
 // Oznaczanie powiadomienia jako przeczytane
 router.post('/read', markNotificationAsRead);
 router.get('/check-walks', checkWalksForNotifications);
+
+
+router.delete('/', deleteNotification);
 
 
 module.exports = router;

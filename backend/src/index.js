@@ -18,6 +18,9 @@ const profileRoutes = require('./routes/profileRoutes')
 const shelterRoutes = require('./routes/shelterRoutes')
 const adoptionRoutes = require('./routes/adoptionRoutes');
 
+connectDB();
+
+
 app.use(cookieParser());
 app.use(morgan('dev'))
 app.use(cors({
@@ -26,11 +29,18 @@ app.use(cors({
 }))
 app.use(bodyParser.json())
 
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8'); // Ustaw kodowanie UTF-8
+  next();
+});
+
 app.use(express.json());
+
+
+
 
 app.use('/api/profiles', profileRoutes);
 
-connectDB();
 
 app.use('/auth', authRoutes)
 app.use('/test', testRoutes)
@@ -43,6 +53,8 @@ app.use('/api/profiles', profileRoutes)
 app.use('/api/shelter', shelterRoutes);
 app.use('/api', shelterRoutes);
 app.use('/api/adoptions', adoptionRoutes);
+
+
 
 
 
