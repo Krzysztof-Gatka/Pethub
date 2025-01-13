@@ -33,6 +33,7 @@ const SignUpForm = () => {
             const response = await axios.post(
                 `${API_URL}/auth/signup?role=${role}`,
                 formData,
+                {withCredentials:true}
             )
             const userId = response.data.userId
             if (role == 'shelter') {

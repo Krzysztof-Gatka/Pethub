@@ -10,7 +10,7 @@ const upload = multer({storage})
 
 const router = express.Router();
 
-router.post('/shelter/create', createShelterProfile);
+router.post('/shelter/create', upload.single('image'),createShelterProfile);
 
 router.post('/user/create', createUserProfile);
 

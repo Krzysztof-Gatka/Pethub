@@ -54,7 +54,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
     } : {
       name: '',
       phone: '',
-      address: '',
       description: ''
     })
   });
@@ -77,8 +76,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ type }) => {
 const handleShelterSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   // userId bierzemy np. z kontekstu `useAuth()` lub z parametru:
-  formData.userId = user?.userId; // lub cokolwiek innego
-  console.log(formData);
+  // formData.userId = user?.userId; // lub cokolwiek innego
+  // na ten moment userId bierzemy z URL, jednak domyślnie będziemy korzystać z useAuth()
+  formData.userId = searchParams.get('userId');
 
   // Na backend wysyłamy parametry: 
   //  userId, name, city, street, postal_code, building, description, phone
@@ -94,6 +94,7 @@ const handleShelterSubmit = async (e: React.FormEvent) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       }
     );
+    window.location.href = "http://localhost:5173/"
     // ...
   } catch (error) {
     console.log('Błąd podczas zapisywania profilu schroniska');
