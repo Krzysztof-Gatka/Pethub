@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import ShelterLayout from '../../layouts/ShelterLayout'
+import React, { useEffect, useState } from 'react';
+import ShelterLayout from '../../layouts/ShelterLayout';
 import axios from 'axios';
 import { 
   Container, 
@@ -14,14 +14,12 @@ import {
 } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
 import PetsIcon from '@mui/icons-material/Pets';
-import AnimalSearchFilters from '../../components/shared/AnimalSearchFilters';
+import AnimalSearchFiltersForShelters from '../../components/shared/AnimalSearchFiltersForShelters';
 import { AnimalFilters } from '../../models/Filters';
 import { useNavigate } from 'react-router-dom';
 
-
-
-const ShelterAnimals =  () => {
-    const {user} = useAuth();
+const ShelterAnimals = () => {
+    const { user } = useAuth();
     const [animals, setAnimals] = useState([]);
     const [filteredAnimals, setFilteredAnimals] = useState([]);
     const [page, setPage] = useState(1);
@@ -44,27 +42,34 @@ const ShelterAnimals =  () => {
       }, [user?.userId]);
 
       const handleFilterChange = (filters: AnimalFilters) => {
-          let filtered = animals.filter((animal) => {
+        const filtered = animals.filter((animal) => {
+            // Filtr nazwy
             if (filters.searchTerm && !animal.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
-              return false;
+                return false;
             }
-            if (filters.category && animal.category !== filters.category) {
-              return false;
+    
+            // Filtr gatunku
+            if (filters.species && animal.type !== filters.species) {
+                return false;
             }
-            if (filters.species && animal.species !== filters.species) {
-              return false;
+    
+            // Filtr wieku
+            const age = parseInt(animal.age, 10);
+            if (filters.ageRange) {
+                if (
+                    (filters.ageRange === 'young' && (age < 0 || age > 2)) ||
+                    (filters.ageRange === 'adult' && (age < 3 || age > 7)) ||
+                    (filters.ageRange === 'senior' && age < 8)
+                ) {
+                    return false;
+                }
             }
-            if (filters.shelter && animal.shelter_id !== filters.shelter) {
-              return false;
-            }
-            const age = parseInt(animal.age);
-            if (filters.ageRange && (age < filters.ageRange[0] || age > filters.ageRange[1])) {
-              return false;
-            }
+    
             return true;
-          });
-          setFilteredAnimals(filtered);
-        };
+        });
+        setFilteredAnimals(filtered);
+    };
+    
 
         const totalPages = Math.ceil(filteredAnimals.length / itemsPerPage);
         const startIndex = (page - 1) * itemsPerPage;
@@ -97,9 +102,9 @@ const ShelterAnimals =  () => {
             Dodaj Zwierze
         </Button>
 
-        <AnimalSearchFilters 
+        <AnimalSearchFiltersForShelters 
           onFilterChange={handleFilterChange} 
-          shelters={[]} // Tu należy dodać listę schronisk
+          shelters={[]} // Brak wyboru schronisk w tym widoku
         />
 
         <Grid container spacing={3}>
@@ -130,6 +135,9 @@ const ShelterAnimals =  () => {
                   <Typography variant="body2" color="text.secondary">
                     {animal.description}
                   </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Typ: {animal.type}
+                  </Typography>
                 </CardContent>
                 <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
                   <Button 
@@ -141,15 +149,6 @@ const ShelterAnimals =  () => {
                   >
                     Szczegóły
                   </Button>
-                  {/* <Button 
-                    size="small" 
-                    variant="contained" 
-                    color="primary" 
-                    fullWidth
-                    onClick={() => handleAdopt(animal.id)}
-                  >
-                    Adoptuj
-                  </Button> */}
                 </Box>
               </Card>
             </Grid>
@@ -173,7 +172,7 @@ const ShelterAnimals =  () => {
         )}
       </Container>
     </ShelterLayout>
-  )
-}
+  );
+};
 
-export default ShelterAnimals
+export default ShelterAnimals;

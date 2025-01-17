@@ -61,8 +61,8 @@ const deleteWalk = async (walk_id) => {
 
 
 
-
 module.exports = {
     selectUserWalks,
-    deleteWalk
+    deleteWalk,
+    
 }

@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardMedia, Typography, Button, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 
 interface WalkCardProps {
   id: number;
@@ -9,9 +21,19 @@ interface WalkCardProps {
   date: string;
   imageUrl: string;
   onCancelWalk: (id: number) => void;
+  hideShelterName?: boolean; // Nowy opcjonalny props
 }
 
-const WalkCard = ({ id, animalName, shelterName, date, walkTime, imageUrl, onCancelWalk }: WalkCardProps) => {
+const WalkCard = ({
+  id,
+  animalName,
+  shelterName,
+  date,
+  walkTime,
+  imageUrl,
+  onCancelWalk,
+  hideShelterName = false, // Domyślnie wyświetlamy nazwę schroniska
+}: WalkCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const openDialog = () => setIsDialogOpen(true);
@@ -53,9 +75,12 @@ const WalkCard = ({ id, animalName, shelterName, date, walkTime, imageUrl, onCan
           <Typography variant="h6" gutterBottom>
             {animalName}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Schronisko: {shelterName || 'Nieznane'}
-          </Typography>
+          {/* Warunkowe wyświetlanie schroniska */}
+          {!hideShelterName && (
+            <Typography variant="body2" color="text.secondary">
+              Schronisko: {shelterName || 'Nieznane'}
+            </Typography>
+          )}
           <Typography variant="body2" color="text.secondary">
             Termin spaceru: {date.split('T')[0]} {walkTime}:00
           </Typography>
@@ -77,7 +102,9 @@ const WalkCard = ({ id, animalName, shelterName, date, walkTime, imageUrl, onCan
         <DialogTitle>Potwierdzenie anulowania spaceru</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Czy na pewno chcesz anulować spacer z {animalName} w schronisku {shelterName || 'Nieznane'} zaplanowany na {date.split('T')[0]} o godzinie {walkTime}:00?
+            Czy na pewno chcesz anulować spacer z {animalName}{' '}
+            {!hideShelterName && `w schronisku ${shelterName || 'Nieznane'} `}
+            zaplanowany na {date.split('T')[0]} o godzinie {walkTime}:00?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

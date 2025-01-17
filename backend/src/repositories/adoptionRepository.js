@@ -42,7 +42,7 @@ const selectAdoptionsByUser = async (user_id) => {
 const selectAdoptionsByShelter = async (shelter_id) => {
   const query = `
     SELECT 
-      a.id AS adoption_id,
+      a.id AS id, -- Alias zmieniony na "id"
       an.name AS animal_name,
       u.email AS user_email,
       a.status,
@@ -57,6 +57,7 @@ const selectAdoptionsByShelter = async (shelter_id) => {
   const [rows] = await pool.query(query, [shelter_id]);
   return rows;
 };
+
 
 // Aktualizowanie statusu adopcji
 const updateAdoptionStatus = async (adoption_id, status) => {
@@ -93,6 +94,22 @@ const deleteAdoptionById = async (adoption_id) => {
   }
 };
 
+const getShelterAdoptions = async (shelterId) => {
+  const query = `
+      SELECT ad.id, ad.date, ad.status, a.name AS animal_name
+      FROM adoptions ad
+      JOIN animals a ON ad.animal_id = a.id
+      WHERE a.shelter_id = ?;
+  `;
+  try {
+      const [rows] = await pool.query(query, [shelterId]);
+      return rows;
+  } catch (error) {
+      console.error('Error fetching adoptions:', error);
+      throw error;
+  }
+};
+
 
 module.exports = {
   insertAdoption,
@@ -100,4 +117,5 @@ module.exports = {
   selectAdoptionsByShelter,
   updateAdoptionStatus,
   deleteAdoptionById,
+  getShelterAdoptions
 };

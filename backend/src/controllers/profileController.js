@@ -1,5 +1,6 @@
 // profileController.js
 const { pool } = require('../config/db');
+const jwt = require('jsonwebtoken');
 
 const {
   insertUserProfile,
@@ -85,7 +86,43 @@ const createShelterProfile = async (req, res) => {
   }
 };
 
+
+const getShelterSession = async (req, res) => {
+  const token = req.cookies['jwt'];
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Jeśli użytkownik jest schroniskiem, pobierz jego `shelterId`
+    let shelterId = null;
+    if (user.role === 'shelter') {
+      const [shelter] = await pool.query(
+        'SELECT id FROM shelter_profiles WHERE shelter_id = ?',
+        [user.userId]
+      );
+      shelterId = shelter.length > 0 ? shelter[0].id : null;
+    }
+
+    res.status(200).json({
+      user: {
+        email: user.email,
+        userId: user.userId,
+        role: user.role,
+        shelterId,
+      },
+    });
+  } catch (err) {
+    console.error('Error verifying token:', err);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
 module.exports = {
   createUserProfile,
-  createShelterProfile
+  createShelterProfile,
+  getShelterSession
+
 };

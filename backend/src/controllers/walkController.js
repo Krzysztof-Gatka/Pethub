@@ -1,11 +1,8 @@
 const jwt = require('jsonwebtoken')
 const { selectUserWalks, deleteWalk } = require('../repositories/walkRepository')
 const { addNotification } = require('./notificationController');
-
 const { pool } = require('../config/db');
-
-
-
+const { get } = require('../routes/walkRoutes');
 
 const getWalks = async (req, res) => {
     console.log('Fetching walks for user');
@@ -69,7 +66,87 @@ const getWalks = async (req, res) => {
 };
 
 
+const getShelterWalks = async (req, res) => {
+  const { shelterId } = req.params; // Odczytujemy ID schroniska z URL
+
+  if (!shelterId || isNaN(shelterId)) {
+    return res.status(400).json({ 
+      success: false, 
+      error: 'Valid shelter ID is required' 
+    });
+  }
+
+  try {
+    const query = `
+        SELECT 
+          w.id, 
+          w.date, 
+          w.time_slot, 
+          a.name AS animal_name, 
+          i.img_url, 
+          s.name AS shelter_name, 
+          s.city AS shelter_city 
+        FROM walks w
+        JOIN animals a ON w.animal_id = a.id
+        LEFT JOIN images i ON a.id = i.owner_id
+        JOIN shelter_profiles s ON a.shelter_id = s.id
+        WHERE a.shelter_id = ?;
+
+    `;
+
+    const [rows] = await pool.query(query, [shelterId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'No walks found for the given shelter'
+      });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      data: rows, 
+      error: null 
+    });
+  } catch (error) {
+    console.error('Error fetching walks for shelter:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+};
+
+
+const getWalksForAnimal = async (req, res) => {
+  const { animalId } = req.params;
+
+  try {
+    const query = `
+      SELECT id, date, time_slot
+      FROM walks
+      WHERE animal_id = ?;
+    `;
+    const [rows] = await pool.query(query, [animalId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No walks found for this animal.' });
+    }
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching walks:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+
+
+
 module.exports = {
     getWalks,
-    removeWalk
+    removeWalk,
+    getShelterWalks,
+    getWalksForAnimal
+    
 }

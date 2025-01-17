@@ -15,14 +15,29 @@ const getAllAnimals = async (email) => {
 };
 
 const selectAnimalsByShelterId = async (shelter_id) => {
-    const query = `SELECT * FROM animal_profiles_view WHERE shelter_id = ?`
+    const query = `
+        SELECT 
+            a.id AS animal_id, 
+            a.name, 
+            TIMESTAMPDIFF(YEAR, a.birth_date, CURDATE()) AS age, 
+            a.description, 
+            a.type, 
+            a.breed, 
+            a.shelter_id, 
+            i.img_url 
+        FROM animals a
+        LEFT JOIN images i ON a.id = i.owner_id
+        WHERE a.shelter_id = ?
+    `;
     try {
-        const [rows] = await pool.query(query, [shelter_id])
+        const [rows] = await pool.query(query, [shelter_id]);
         return rows.length > 0 ? rows : [];
     } catch (err) {
-        console.error('Error selecting animals by given shelter id')
+        console.error('Error selecting animals by given shelter id:', err);
+        throw err;
     }
-}
+};
+
 
 const getAnimalById = async (id) => {
     const query = `

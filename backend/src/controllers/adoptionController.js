@@ -62,15 +62,11 @@ const getAdoptionsForUser = async (req, res) => {
 };
 
 const getAdoptionsForShelter = async (req, res) => {
-  try {
-    const { shelterId } = req.params;
-    const adoptions = await selectAdoptionsByShelter(shelterId);
-    res.status(200).json({ adoptions });
-  } catch (error) {
-    console.error('Error fetching shelter adoptions:', error.message);
-    res.status(500).json({ error: 'Failed to fetch shelter adoptions' });
-  }
+  const { shelterId } = req.params; // zamiast req.query
+  const adoptions = await selectAdoptionsByShelter(shelterId);
+  res.status(200).json({ adoptions });
 };
+
 
 const updateAdoption = async (req, res) => {
   try {
@@ -154,10 +150,90 @@ const deleteAdoption = async (req, res) => {
 };
 
 
+const getAdoptionsByShelter = async (req, res) => {
+    const { shelterId } = req.query;
+    try {
+        const adoptions = await getShelterAdoptions(shelterId);
+        res.json(adoptions);
+    } catch (error) {
+        console.error('Error fetching adoptions by shelter:', error);
+        res.status(500).json({ error: 'Error fetching adoptions.' });
+    }
+};
+
+
+const getAdoptionFormDetails = async (req, res) => {
+  const { adoptionId } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        a.id AS adoption_id,
+        an.name AS animal_name,
+        a.adoptionData AS answers,
+        u.email AS user_email,
+        CONCAT(up.first_name, ' ', up.second_name) AS user_name,
+        a.status,
+        DATE_FORMAT(a.created_at, '%Y-%m-%d') AS date
+      FROM adoptions a
+      JOIN animals an ON a.animal_id = an.id
+      JOIN users u ON a.user_id = u.id
+      JOIN user_profiles up ON u.id = up.user_id
+      WHERE a.id = ?;
+    `;
+
+    const [rows] = await pool.query(query, [adoptionId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Adoption not found' });
+    }
+
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    console.error('Error fetching adoption form details:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+const getAdoptionsForAnimal = async (req, res) => {
+  const { id } = req.params; // Odczytujemy `id` zwierzęcia z parametrów trasy
+
+  try {
+    const query = `
+      SELECT 
+        a.id AS adoption_id,
+        u.email AS user_email,
+        a.created_at AS date, 
+        a.status,
+        an.name AS animal_name
+      FROM adoptions a
+      JOIN animals an ON a.animal_id = an.id
+      JOIN users u ON a.user_id = u.id
+      WHERE a.animal_id = ?;
+    `;
+
+    const [rows] = await pool.query(query, [id]); // Użycie `pool.query` do wykonania zapytania
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No adoptions found for this animal.' });
+    }
+
+    res.status(200).json(rows); // Zwracamy wyniki zapytania
+  } catch (error) {
+    console.error('Error fetching adoptions for animal:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+}
+
+
+
 module.exports = {
   createNewAdoption,
   getAdoptionsForUser,
   getAdoptionsForShelter,
   updateAdoption,
   deleteAdoption,
+  getAdoptionsByShelter,
+  getAdoptionFormDetails,
+  getAdoptionsForAnimal,
 };

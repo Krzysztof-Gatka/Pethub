@@ -13,6 +13,7 @@ const SIGNIN_URL = 'http://localhost:5173/signin'
 export default function ButtonAppBar() {
     const navigate = useNavigate();
     const {user, isLoggedIn, loading, logout } = useAuth();
+    console.log('User object:', user);
 
     const handleSignIn = () => {
       window.location.href = (SIGNIN_URL);
@@ -57,14 +58,27 @@ export default function ButtonAppBar() {
             {
               user! && user.role === 'shelter' && (
                 <>
-                  <Button color="inherit" onClick={() => navigate('/shelter/animals')}>Zwierzęta</Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/notifications')}>Powiadomienia</Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/walks')}>Spacery</Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/adoptions')}>Adopcje</Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/profile')}>Adopcje</Button>
-                  <Button color="inherit" onClick={handleLogout}>Wyloguj</Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/animals')}>
+                    Zwierzęta
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/notifications')}>
+                    Powiadomienia
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/walks')}>
+                    Spacery
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/adoptions')}>
+                    Adopcje
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate('/shelter/profile')}>
+                    Profil schroniska
+                  </Button>
+                  <Button color="inherit" onClick={handleLogout}>
+                    Wyloguj
+                  </Button>
                 </>
               )
+              
             }
           </Toolbar>
         </AppBar>

@@ -9,9 +9,18 @@ interface AdoptionCardProps {
   status: string;
   imageUrl: string;
   onCancelAdoption: () => void;
+  hideShelterName?: boolean; // Nowy opcjonalny props
 }
 
-const AdoptionCard: React.FC<AdoptionCardProps> = ({ animalName, shelterName, date, status, imageUrl, onCancelAdoption }) => {
+const AdoptionCard: React.FC<AdoptionCardProps> = ({
+  animalName,
+  shelterName,
+  date,
+  status,
+  imageUrl,
+  onCancelAdoption,
+  hideShelterName = false, // Domyślnie wyświetlamy nazwę schroniska
+}) => {
   const statusColor = {
     pending: 'warning',
     approved: 'success',
@@ -45,9 +54,11 @@ const AdoptionCard: React.FC<AdoptionCardProps> = ({ animalName, shelterName, da
       />
       <CardContent sx={{ flex: 1 }}>
         <Typography variant="h6">{animalName}</Typography>
-        <Typography variant="body2" color="textSecondary">
-          Schronisko: {shelterName}
-        </Typography>
+        {!hideShelterName && (
+          <Typography variant="body2" color="textSecondary">
+            Schronisko: {shelterName}
+          </Typography>
+        )}
         <Typography variant="body2" color="textSecondary">
           Data zgłoszenia: {date.split('T')[0]}
         </Typography>

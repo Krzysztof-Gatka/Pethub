@@ -15,7 +15,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import PetsIcon from '@mui/icons-material/Pets';
 import { ShelterModel } from '../../models/Shelter';
-import AnimalSearchFilters from '../../components/shared/AnimalSearchFilters';
+import AnimalSearchFiltersForShelters from '../../components/shared/AnimalSearchFiltersForShelters';
 import { useAuth } from '../../hooks/useAuth';
 import axios from 'axios';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -33,15 +33,15 @@ const Shelter = () => {
   const [isFollowed, setIsFollowed] = useState(false);
 
   const fetchAnimals = async () => {
-    const response = await axios.get(`http://localhost:3000/api/animals/shelter?id=${Number(id)}`);
-    const animals = response.data.map((animal: any) => ({
-      ...animal,
-      age: Math.floor((new Date().getTime() - new Date(animal.birth_date).getTime()) / (1000 * 60 * 60 * 24 * 365.25)), // Obliczanie wieku
-    }));
-    setAnimals(animals);
-    setFilteredAnimals(animals);
+    try {
+      const response = await axios.get(`http://localhost:3000/api/animals/shelter?id=${Number(id)}`);
+      setAnimals(response.data); 
+      setFilteredAnimals(response.data); 
+    } catch (error) {
+      console.error('Błąd podczas pobierania zwierząt:', error);
+    }
   };
-
+  
   const fetchShelter = async () => {
     const response = await axios.get(`http://localhost:3000/api/shelter/profile?id=${Number(id)}`);
     const shelter = response.data;
@@ -176,7 +176,7 @@ const Shelter = () => {
         </Paper>
 
         <Collapse in={showAnimals}>
-          <AnimalSearchFilters 
+          <AnimalSearchFiltersForShelters 
             onFilterChange={handleFilterChange} 
             shelters={[]} // No shelter filtering here
             hideShelterFilter={true} // Ukrywa pole schroniska

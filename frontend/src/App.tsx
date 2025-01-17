@@ -23,6 +23,10 @@ import ShelterAnimals from './pages/Animals/ShelterAnimals';
 import ShelterAnimal from './pages/Animals/ShelterAnimal';
 import AdoptionCard from './components/shared/AdoptionCard';
 import Adoptions from './pages/Adoptions/adoptions';
+import ShelterWalks from './pages/Walks/ShelterWalks';
+import ShelterAdoptions from './pages/Adoptions/ShelterAdoptions';
+import AdoptionResponses from './pages/Adoptions/AdoptionResponses';
+
 
 function App() {
   return (
@@ -67,6 +71,17 @@ function App() {
         <Route path="/shelter/animals/:id/edit" element={<Animals/>} />
         <Route path="/shelter/animals/:id/delete" element={<Animals/>} />
         <Route path="/animals/:id" element={<Animals/>} />
+
+
+
+        <Route path="/shelter/animal/:id" element={<ShelterAnimal />} />
+        <Route path="/shelter/walks" element={<ShelterWalks />} />
+
+
+        <Route path="/shelter/adoptions" element={<ShelterAdoptions />} />
+        <Route path="/adoption/:adoptionId/responses" element={<AdoptionResponses />} />
+
+
       </Routes>
     </AuthProvider>
   )
