@@ -1,7 +1,7 @@
 const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary').v2
-const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks, selectAnimalBookedWalks, selectAnimalsByShelterId} = require('../repositories/animalRepository')
+const {getAllAnimals, getAnimalById, insertImg, insertAnimalData, getBookedSlots, insertBookedSlot, selectUserWalks, selectAnimalWalks, selectAnimalBookedWalks, selectAnimalsByShelterId, selectRawAnimal, updateAnimal, updateImg} = require('../repositories/animalRepository')
 const { addNotification } = require('./notificationController');
 
 
@@ -36,6 +36,18 @@ const getAnmlById = async (req, res) => {
   }
 }
 
+const getRawAnimal = async (req, res) => {
+  const animalId = req.params.id;
+
+  try {
+    const rows = await selectRawAnimal(Number(animalId));
+    res.json(rows);
+
+  } catch (err) {
+    res.status(500).json({error: err.message})
+  }
+}
+
 
 
 cloudinary.config({
@@ -43,6 +55,27 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+const editAnimal = async (req, res) => {
+  const animalId = req.params.id;
+  try {
+    const { name, birth_date, description, type, breed, shelter_id } = req.body;
+    const date_joined = new Date().toISOString().split('T')[0];
+    let imageUrl = null
+    if(req.file) {
+
+      // dodanie zdjęcia do cloudinary
+      const cloudinary_response = await cloudinary.uploader.upload(req.file.path)
+      imageUrl = cloudinary_response.secure_url
+      await updateImg(animalId, imageUrl)
+    } 
+    await updateAnimal(animalId, name, birth_date, description, type, breed, date_joined, imageUrl);
+    res.status(201).json({ message: 'Animal updated successfully' });
+} catch (err) {
+    console.error('Error updating animal', err);
+    res.status(500).json({ error: err.message });
+}
+}
 
 const addAnimal = async (req, res) => {
   try {
@@ -122,5 +155,7 @@ module.exports = {
     bookWalk,
     getUserWalks,
     getAnimalWalks,
-    getAnimalsByShelterId
+    getAnimalsByShelterId,
+    getRawAnimal,
+    editAnimal
 }

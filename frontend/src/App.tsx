@@ -8,6 +8,7 @@ import { useAuth } from './hooks/useAuth'
 import ShelterLayout from './layouts/ShelterLayout'
 import Animal from './pages/Animals/Animal'
 import AnimalAdd from './pages/Animals/AnimalAdd'
+import AnimalEdit from './pages/Animals/AnimalEdit'
 import AccountTypeSelector from './components/shared/AccountTypeSelector'
 import RegistrationMethodSelector from './components/shared/RegistrationMethodSelector'
 import Followed from './pages/Followed/Followed'
@@ -66,6 +67,7 @@ function App() {
 
         {/* shelter routes */}
         <Route path="/shelter/animals" element={<ShelterAnimals/>} />
+        <Route path="/shelter/animals/:id/edit" element={<AnimalEdit/>} />
         <Route path="/shelter/animals/:id" element={<ShelterAnimal/>} />
         <Route path="/shelter/animals/add" element={<AnimalAdd/>} />
         <Route path="/shelter/animals/:id/edit" element={<Animals/>} />

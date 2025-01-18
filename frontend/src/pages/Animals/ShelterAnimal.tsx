@@ -71,7 +71,7 @@ const ShelterAnimal = () => {
   };
 
   const handleEditAnimal = () => {
-    navigate(`/shelter/animals`);
+    navigate(`/shelter/animals/${id}/edit`);
   };
 
   if (!animal) {

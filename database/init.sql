@@ -46,7 +46,7 @@ CREATE TABLE animals (
 
 CREATE TABLE images (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    owner_id INT,
+    owner_id INT UNIQUE,
     owner_type ENUM('user', 'shelter', 'animal'),
     img_url VARCHAR(255)
 );

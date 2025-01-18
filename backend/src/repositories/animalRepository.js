@@ -1,4 +1,5 @@
-const { pool } = require('../config/db')
+const { pool } = require('../config/db');
+const { getRawAnimal } = require('../controllers/animalController');
 
 
 const getAllAnimals = async (email) => {
@@ -38,6 +39,17 @@ const selectAnimalsByShelterId = async (shelter_id) => {
     }
 };
 
+const selectRawAnimal = async (id) => {
+    const query = `SELECT * FROM animals WHERE id = ?`
+    try {
+        const [rows] = await pool.query(query, [id])
+        return rows.length > 0 ? rows[0] : null;
+    } catch (err) {
+        console.error('Error selecting animal:', err);
+        throw err;
+    }
+}
+
 
 const getAnimalById = async (id) => {
     const query = `
@@ -45,7 +57,7 @@ const getAnimalById = async (id) => {
             a.id, 
             a.name, 
             TIMESTAMPDIFF(YEAR, a.birth_date, CURDATE()) AS age, 
-            a.description,
+            a.description,  
             a.breed, 
             DATE_FORMAT(a.date_joined, '%d-%m-%Y') AS date_joined, -- Formatowanie daty
             a.shelter_id, 
@@ -65,6 +77,16 @@ const getAnimalById = async (id) => {
     }
 };
 
+
+const updateAnimal = async (animalId, name, birth_date, description, type, breed, date_joined, imageUrl) => {
+    console.log('updateAnimal:', animalId, name, birth_date, description, type, breed, date_joined, imageUrl)
+    const query = `
+        UPDATE animals SET name = ?, birth_date = ?, description = ?, type = ?, breed = ?, date_joined = ?
+        WHERE id = ?;
+    `
+    const [result] = await pool.query(query, [name, birth_date, description, type, breed, date_joined, animalId])
+    if(imageUrl) await insertImg(animalId, imageUrl)
+}
 
 const insertAnimalData = async (name, birth_date, description, type, breed, shelter_id, date_joined, imageUrl) => {
     const query = `
@@ -86,6 +108,16 @@ const insertImg = async (animalId, url) => {
         return imageResult
     } catch(err) {
         console.error("error inserting image", err)
+    }
+}
+
+const updateImg = async (animalId, url) => {
+    const query = `UPDATE images SET img_url = ? WHERE owner_id = ?`
+    try {
+        const [imageResult] = await pool.query(query, [url, Number(animalId)])
+        return imageResult
+    } catch(err) {
+        console.error("error updating image", err)
     }
 }
 
@@ -154,4 +186,7 @@ module.exports = {
     selectAnimalWalks,
     selectAnimalBookedWalks,
     selectAnimalsByShelterId,
+    selectRawAnimal,
+    updateAnimal,
+    updateImg
 }
