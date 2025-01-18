@@ -8,11 +8,11 @@ const createShelterProfile = async (req, res) => {
         const user = jwt.decode(token);
         const shelter_id = user.userId;
         
-        const { name, address, city, street, postal_code, building, description, phone_number } = req.body;
+        const { name, city, street, postal_code, building, description, phone_number } = req.body;
         
         const [result] = await pool.execute(
-            'INSERT INTO shelter_profiles (shelter_id, name, address, city, street, postal_code, building, description, phone_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [shelter_id, name, address, city, street, postal_code, building, description, phone_number]
+            'INSERT INTO shelter_profiles (shelter_id, name, city, street, postal_code, building, description, phone_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [shelter_id, name, city, street, postal_code, building, description, phone_number]
         );
         
         res.status(201).json({ 
@@ -30,14 +30,14 @@ const updateShelterProfile = async (req, res) => {
         const user = jwt.decode(token);
         const shelter_id = user.userId;
         
-        const { name, address, city, street, postal_code, building, description, phone_number } = req.body;
+        const { name, city, street, postal_code, building, description, phone_number } = req.body;
         
         const [result] = await pool.execute(
             `UPDATE shelter_profiles 
-             SET name = ?, address = ?, city = ?, street = ?, postal_code = ?, 
+             SET name = ?, city = ?, street = ?, postal_code = ?, 
                  building = ?, description = ?, phone_number = ?
              WHERE shelter_id = ?`,
-            [name, address, city, street, postal_code, building, description, phone_number, shelter_id]
+            [name, city, street, postal_code, building, description, phone_number, shelter_id]
         );
         
         if (result.affectedRows === 0) {
@@ -49,6 +49,7 @@ const updateShelterProfile = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 const deleteShelterProfile = async (req, res) => {
     try {

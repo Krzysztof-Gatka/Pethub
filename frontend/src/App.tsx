@@ -26,7 +26,7 @@ import Adoptions from './pages/Adoptions/adoptions';
 import ShelterWalks from './pages/Walks/ShelterWalks';
 import ShelterAdoptions from './pages/Adoptions/ShelterAdoptions';
 import AdoptionResponses from './pages/Adoptions/AdoptionResponses';
-
+import ShelterProfilePage from './components/ShelterProfilePage';
 
 function App() {
   return (
@@ -71,6 +71,8 @@ function App() {
         <Route path="/shelter/animals/:id/edit" element={<Animals/>} />
         <Route path="/shelter/animals/:id/delete" element={<Animals/>} />
         <Route path="/animals/:id" element={<Animals/>} />
+
+        <Route path="/shelter/profile" element={<ShelterProfilePage />} />
 
 
 
