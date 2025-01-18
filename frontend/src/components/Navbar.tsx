@@ -1,88 +1,163 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { Container } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  IconButton,
+  Menu,
+  MenuItem,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../hooks/useAuth';
 
-const SIGNIN_URL = 'http://localhost:5173/signin'
+const SIGNIN_URL = 'http://localhost:5173/signin';
 
-export default function ButtonAppBar() {
-    const navigate = useNavigate();
-    const {user, isLoggedIn, loading, logout } = useAuth();
-    console.log('User object:', user);
+const Navbar = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
+  const { user, isLoggedIn, logout } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-    const handleSignIn = () => {
-      window.location.href = (SIGNIN_URL);
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    handleClose();
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+    handleClose();
+  };
+
+  const getMenuItems = () => {
+    if (!isLoggedIn) {
+      return [
+        { label: 'Zwierzęta', path: '/animals' },
+        { label: 'Schroniska', path: '/shelters' },
+        { label: 'Zarejestruj się', path: '/signup' },
+        { label: 'Zaloguj się', path: '/signin' }
+      ];
     }
 
-    const handleLogout = async () => {
-      await logout();
-      navigate('/')
+    if (user?.role === 'user') {
+      return [
+        { label: 'Zwierzęta', path: '/animals' },
+        { label: 'Schroniska', path: '/shelters' },
+        { label: 'Obserwowane', path: '/followed' },
+        { label: 'Spacery', path: '/walks' },
+        { label: 'Powiadomienia', path: '/notifications' },
+        { label: 'Moje Adopcje', path: '/adoptions' },
+        { label: 'Wyloguj', action: handleLogout }
+      ];
     }
-    
+
+    if (user?.role === 'shelter') {
+      return [
+        { label: 'Zwierzęta', path: '/shelter/animals' },
+        { label: 'Powiadomienia', path: '/shelter/notifications' },
+        { label: 'Spacery', path: '/shelter/walks' },
+        { label: 'Adopcje', path: '/shelter/adoptions' },
+        { label: 'Profil schroniska', path: '/shelter/profile' },
+        { label: 'Wyloguj', action: handleLogout }
+      ];
+    }
+
+    return [];
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ px: 0 }}>
+    <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              <img onClick={() => navigate('/')} width="100" src="/pethub-logo.png" alt="" />
+            <Typography 
+              variant="h6" 
+              component="div" 
+              sx={{ 
+                flexGrow: 1,
+                cursor: 'pointer'
+              }}
+              onClick={() => navigate('/')}
+            >
+              <img 
+                src="/pethub-logo.png" 
+                alt="PetHub Logo" 
+                style={{ 
+                  width: '100px',
+                  height: 'auto'
+                }} 
+              />
             </Typography>
-            {!isLoggedIn && (
+
+            {isMobile ? (
               <>
-                <Button color="inherit" onClick={() => navigate('/animals')}>Zwierzęta</Button>
-                <Button color="inherit" onClick={() => navigate('/shelters')}>Schroniska</Button>
-                <Button color="inherit" onClick={() => {navigate('/signup')}}>Zarejestruj się</Button>
-                <Button color="inherit" onClick={() => navigate('/signin')}>Zaloguj się</Button>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={handleMenu}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  {getMenuItems().map((item, index) => (
+                    <MenuItem 
+                      key={index} 
+                      onClick={() => item.action ? item.action() : handleNavigation(item.path)}
+                    >
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
               </>
+            ) : (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {getMenuItems().map((item, index) => (
+                  <Button
+                    key={index}
+                    color="inherit"
+                    onClick={() => item.action ? item.action() : handleNavigation(item.path)}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </Box>
             )}
-
-            {
-              user! && user.role === 'user' && (
-                <>
-                  <Button color="inherit" onClick={() => navigate('/animals')}>Zwierzęta</Button>
-                  <Button color="inherit" onClick={() => navigate('/shelters')}>Schroniska</Button>
-                  <Button color="inherit" onClick={() => navigate('/followed')}>Obserwowane</Button>
-                  <Button color="inherit" onClick={() => navigate('/walks')}>Spacery</Button>
-                  <Button color="inherit" onClick={() => navigate('/notifications')}>Powiadomienia</Button>
-                  <Button color="inherit" onClick={() => navigate('/adoptions')}>Moje Adopcje</Button>
-                  <Button color="inherit" onClick={handleLogout}>Wyloguj</Button>
-                </>
-              )
-            }
-
-            {
-              user! && user.role === 'shelter' && (
-                <>
-                  <Button color="inherit" onClick={() => navigate('/shelter/animals')}>
-                    Zwierzęta
-                  </Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/notifications')}>
-                    Powiadomienia
-                  </Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/walks')}>
-                    Spacery
-                  </Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/adoptions')}>
-                    Adopcje
-                  </Button>
-                  <Button color="inherit" onClick={() => navigate('/shelter/profile')}>
-                    Profil schroniska
-                  </Button>
-                  <Button color="inherit" onClick={handleLogout}>
-                    Wyloguj
-                  </Button>
-                </>
-              )
-              
-            }
           </Toolbar>
         </AppBar>
       </Box>
     </Container>
   );
-}
+};
+
+export default Navbar;
