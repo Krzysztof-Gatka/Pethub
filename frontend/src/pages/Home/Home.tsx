@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { 
   Container, 
   Grid, 
   Paper, 
   Typography, 
-  Box, 
-  Button 
+  Button,
+  Box
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -16,216 +16,143 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PeopleIcon from '@mui/icons-material/People';
 import Navbar from '../../components/Navbar';
 
+const InfoCard = ({ icon: Icon, title, description, buttonText, buttonColor, onClick }) => (
+  <Grid item xs={12} md={12} lg={4}>
+    <Paper 
+      elevation={3} 
+      sx={{ 
+        p: { xs: 3, sm: 4 },
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        transition: 'transform 0.2s',
+        '&:hover': {
+          transform: 'scale(1.02)'
+        }
+      }}
+    >
+      <Box sx={{ mb: 3 }}>
+        <Icon sx={{ 
+          fontSize: { xs: 48, sm: 56 }, 
+          color: `${buttonColor}.main`
+        }} />
+      </Box>
+      
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom
+        sx={{ 
+          fontSize: { xs: '1.5rem', sm: '1.75rem' },
+          mb: 2
+        }}
+      >
+        {title}
+      </Typography>
+      
+      <Typography 
+        sx={{ 
+          mb: 4,
+          flexGrow: 1,
+          fontSize: { xs: '1rem', sm: '1.125rem' }
+        }}
+      >
+        {description}
+      </Typography>
+      
+      {buttonText && (
+        <Button 
+          variant="contained" 
+          color={buttonColor}
+          size="large"
+          onClick={onClick}
+          sx={{ 
+            mt: 'auto',
+            py: 1.5,
+            px: 4,
+            minWidth: '200px'
+          }}
+        >
+          {buttonText}
+        </Button>
+      )}
+    </Paper>
+  </Grid>
+);
+
 const Home = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useAuth();
+  const { user } = useAuth();
 
-  const WelcomeCard = () => (
-    <Grid item xs={12} md={4}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          height: '100%',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          transition: 'transform 0.2s',
-          '&:hover': {
-            transform: 'scale(1.02)'
-          }
-        }}
-      >
-        <InfoIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
-        <Typography variant="h5" component="h2" gutterBottom>
-          Witaj w PetHub!
-        </Typography>
-        <Typography sx={{ mb: 4 }}>
-          PetHub to miejsce, gdzie możesz znaleźć swojego przyszłego czworonożnego przyjaciela. 
-          Przeglądaj profile zwierząt, poznaj schroniska i daj dom potrzebującemu zwierzakowi.
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 'auto' }}>
-          Zacznij od przeglądania dostępnych zwierząt lub znajdź najbliższe schronisko.
-        </Typography>
-      </Paper>
-    </Grid>
-  );
-
-  const AnimalsCard = () => (
-    <Grid item xs={12} md={4}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          height: '100%',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          transition: 'transform 0.2s',
-          '&:hover': {
-            transform: 'scale(1.02)'
-          }
-        }}
-      >
-        <PetsIcon sx={{ fontSize: 60, color: 'error.main', mb: 2 }} />
-        <Typography variant="h5" component="h2" gutterBottom>
-          Zwierzęta
-        </Typography>
-        <Typography sx={{ mb: 4 }}>
-          Poznaj zwierzaki czekające na nowy dom. Możesz filtrować według różnych kryteriów, 
-          aby znaleźć idealnego towarzysza.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          fullWidth
-          onClick={() => navigate('/animals')}
-          sx={{ mt: 'auto' }}
-        >
-          ZOBACZ ZWIERZĘTA
-        </Button>
-      </Paper>
-    </Grid>
-  );
-
-  const ShelterProfileCard = () => (
-    <Grid item xs={12} md={4}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          height: '100%',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          transition: 'transform 0.2s',
-          '&:hover': {
-            transform: 'scale(1.02)'
-          }
-        }}
-      >
-        <ManageAccountsIcon sx={{ fontSize: 60, color: 'success.main', mb: 2 }} />
-        <Typography variant="h5" component="h2" gutterBottom>
-          Profil Schroniska
-        </Typography>
-        <Typography sx={{ mb: 4 }}>
-          Zarządzaj profilem swojego schroniska. Aktualizuj informacje, 
-          dane kontaktowe i inne istotne szczegóły.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="success" 
-          fullWidth
-          onClick={() => navigate('/shelter/profile')}
-          sx={{ mt: 'auto' }}
-        >
-          ZARZĄDZAJ PROFILEM
-        </Button>
-      </Paper>
-    </Grid>
-  );
-
-  const SheltersCard = () => (
-    <Grid item xs={12} md={4}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          height: '100%',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          transition: 'transform 0.2s',
-          '&:hover': {
-            transform: 'scale(1.02)'
-          }
-        }}
-      >
-        <HomeIcon sx={{ fontSize: 60, color: 'success.main', mb: 2 }} />
-        <Typography variant="h5" component="h2" gutterBottom>
-          Schroniska
-        </Typography>
-        <Typography sx={{ mb: 4 }}>
-          Znajdź schroniska w Twojej okolicy. Możesz przeglądać profile schronisk, 
-          sprawdzać dostępne zwierzęta i kontaktować się z nimi.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="success" 
-          fullWidth
-          onClick={() => navigate('/shelters')}
-          sx={{ mt: 'auto' }}
-        >
-          ZOBACZ SCHRONISKA
-        </Button>
-      </Paper>
-    </Grid>
-  );
-
-  const ManageAdoptionsCard = () => (
-    <Grid item xs={12} md={4}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          height: '100%',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          transition: 'transform 0.2s',
-          '&:hover': {
-            transform: 'scale(1.02)'
-          }
-        }}
-      >
-        <PeopleIcon sx={{ fontSize: 60, color: 'warning.main', mb: 2 }} />
-        <Typography variant="h5" component="h2" gutterBottom>
-          Zarządzanie Adopcjami
-        </Typography>
-        <Typography sx={{ mb: 4 }}>
-          Przeglądaj i zarządzaj procesami adopcyjnymi. Sprawdzaj zgłoszenia, 
-          komunikuj się z potencjalnymi opiekunami i śledź postępy adopcji.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="warning" 
-          fullWidth
-          onClick={() => navigate('/shelter/adoptions')}
-          sx={{ mt: 'auto' }}
-        >
-          ZARZĄDZAJ ADOPCJAMI
-        </Button>
-      </Paper>
-    </Grid>
-  );
+  const cards = {
+    welcome: {
+      icon: InfoIcon,
+      title: "Witaj w PetHub!",
+      description: "PetHub to miejsce, gdzie możesz znaleźć swojego przyszłego czworonożnego przyjaciela. Przeglądaj profile zwierząt, poznaj schroniska i daj dom potrzebującemu zwierzakowi.",
+      buttonColor: "primary"
+    },
+    animals: {
+      icon: PetsIcon,
+      title: "Zwierzęta",
+      description: "Poznaj zwierzaki czekające na nowy dom. Możesz filtrować według różnych kryteriów, aby znaleźć idealnego towarzysza.",
+      buttonText: "ZOBACZ ZWIERZĘTA",
+      buttonColor: "error",
+      onClick: () => navigate('/animals')
+    },
+    shelters: {
+      icon: HomeIcon,
+      title: "Schroniska",
+      description: "Znajdź schroniska w Twojej okolicy. Możesz przeglądać profile schronisk, sprawdzać dostępne zwierzęta i kontaktować się z nimi.",
+      buttonText: "ZOBACZ SCHRONISKA",
+      buttonColor: "success",
+      onClick: () => navigate('/shelters')
+    },
+    shelterProfile: {
+      icon: ManageAccountsIcon,
+      title: "Profil Schroniska",
+      description: "Zarządzaj profilem swojego schroniska. Aktualizuj informacje, dane kontaktowe i inne istotne szczegóły.",
+      buttonText: "ZARZĄDZAJ PROFILEM",
+      buttonColor: "success",
+      onClick: () => navigate('/shelter/profile')
+    },
+    adoptions: {
+      icon: PeopleIcon,
+      title: "Zarządzanie Adopcjami",
+      description: "Przeglądaj i zarządzaj procesami adopcyjnymi. Sprawdzaj zgłoszenia, komunikuj się z potencjalnymi opiekunami i śledź postępy adopcji.",
+      buttonText: "ZARZĄDZAJ ADOPCJAMI",
+      buttonColor: "warning",
+      onClick: () => navigate('/shelter/adoptions')
+    }
+  };
 
   return (
     <>
       <Navbar />
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Grid container spacing={4}>
-          <WelcomeCard />
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          py: { xs: 4, sm: 4, md: 4 },
+          px: { xs: 8, sm: 8 }
+        }}
+      >
+        <Grid 
+          container 
+          spacing={{ xs: 10, sm: 12, md: 12, lg: 4}}
+          alignItems="stretch"
+          justifyContent={"space-between"}
+        >
+          <InfoCard {...cards.welcome} />
           {user?.role === 'shelter' ? (
-            // Karty dla schroniska
             <>
-              <ShelterProfileCard />
-              <ManageAdoptionsCard />
+              <InfoCard {...cards.shelterProfile} />
+              <InfoCard {...cards.adoptions} />
             </>
           ) : (
-            // Karty dla użytkownika/gościa
             <>
-              <AnimalsCard />
-              <SheltersCard />
+              <InfoCard {...cards.animals} />
+              <InfoCard {...cards.shelters} />
             </>
           )}
         </Grid>
