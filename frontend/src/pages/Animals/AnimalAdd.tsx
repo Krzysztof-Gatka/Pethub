@@ -14,8 +14,11 @@ import {
 } from '@mui/material';
 import ShelterLayout from '../../layouts/ShelterLayout';
 import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from "react-router-dom";
+
 
 const AnimalAdd: React.FC = () => {
+    const navigate = useNavigate()
     const { user } = useAuth();
     const [form, setForm] = useState({
         name: '',
@@ -60,10 +63,13 @@ const AnimalAdd: React.FC = () => {
             });
             console.log(response.data);
             alert('Profil zwierzęcia został dodany!');
+            navigate('/shelter/animals')
         } catch (error) {
             console.error('Błąd podczas dodawania zwierzęcia:', error);
             alert('Nie udało się dodać profilu zwierzęcia.');
         }
+
+        
     };
 
     return (

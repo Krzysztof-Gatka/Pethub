@@ -72,14 +72,15 @@ const insertAnimalData = async (name, birth_date, description, type, breed, shel
         VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [name, birth_date, description, type, breed, shelter_id, date_joined];
-    await pool.query(query, values);
+    const [result] = await pool.query(query, values);
+    const animal_id = result.insertId
+    await insertImg(animal_id, imageUrl)
 };
 
 
 
-
 const insertImg = async (animalId, url) => {
-    const query = `INSERT INTO images (owner_id, img_url) VALUES (?, ?)`
+    const query = `INSERT INTO images (owner_id, owner_type, img_url) VALUES (?, 'animal', ?)`
     try {
         const [imageResult] = await pool.query(query, [animalId, url])
         return imageResult

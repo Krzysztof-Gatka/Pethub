@@ -47,8 +47,11 @@ cloudinary.config({
 const addAnimal = async (req, res) => {
   try {
       const { name, birth_date, description, type, breed, shelter_id } = req.body;
-      const date_joined = new Date().toISOString().split('T')[0]; 
-      const imageUrl = req.file ? req.file.path : null; 
+      const date_joined = new Date().toISOString().split('T')[0];
+
+      // dodanie zdjęcia do cloudinary
+      const cloudinary_response = await cloudinary.uploader.upload(req.file.path)
+      const imageUrl = req.file ? cloudinary_response.secure_url : null; 
 
       await insertAnimalData(name, birth_date, description, type, breed, shelter_id, date_joined, imageUrl);
       res.status(201).json({ message: 'Animal added successfully' });
